@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Dictionary = void 0;
 const tslib_1 = require("tslib");
-const constants_1 = require("@/constants");
-const dictionary_json_1 = tslib_1.__importDefault(require("@/constants/dictionary.json"));
+const constants_1 = require("./constants");
+const dictionary_json_1 = tslib_1.__importDefault(require("./constants/dictionary.json"));
 const { dict } = dictionary_json_1.default;
 var DictionaryMapper;
 (function (DictionaryMapper) {

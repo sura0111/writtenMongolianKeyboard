@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-const constants_1 = require("@/constants");
-const dictionary_1 = require("@/dictionary");
-const textareaSelection_1 = tslib_1.__importDefault(require("@/textareaSelection"));
+const constants_1 = require("./constants");
+const dictionary_1 = require("./dictionary");
+const textareaSelection_1 = tslib_1.__importDefault(require("./textareaSelection"));
 const textareaSelection = new textareaSelection_1.default();
 class MongolianWritten {
     constructor() {
