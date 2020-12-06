@@ -1,6 +1,6 @@
 {
   "name": "written-mongol-keyboard",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -22,17 +22,21 @@
   "license": "MIT",
   "dependencies": {
     "@types/textarea-caret": "^3.0.0",
+    "module-alias": "^2.2.2",
     "textarea-caret": "^3.1.0",
     "typescript": "^4.1.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.2.0",
-    "eslint": "^7.15.0",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "tsconfig-paths": "^3.9.0"
+  },
+  "_moduleAliases": {
+    "@": "dist"
   }
 }
