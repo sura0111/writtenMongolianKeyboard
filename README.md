@@ -3,7 +3,7 @@
 ## About this package
 "written-mongol-keyboard" is a library that converts `alphabet character input` and `cyrillic character input` in textarea and input tags to ancient Mongolian characters.  
 
-It also contains `builtInConversionView` and uses an open source dictionary. This will show you the closest word choice.
+It also has `builtInConversionView` and uses an open source dictionary. This will show you the closest conversion word choices.
 
 ## Installation
 ```bash
@@ -17,13 +17,8 @@ import WrittenMongolKeyboard from 'written-mongol-keyboard'
 const writtenMongolKeyboard = new WrittenMongolKeyboard(target, options)
 ```
 ```typescript
-/**
- * constructor parameters
- */
-
 // when target is not set, it works on all textarea and input elements
 target?: HTMLInputElement | HTMLTextAreaElementoptional
-
 options?: { hasBuiltInConversionView: boolean; maxConversions: number }
 ```
 
@@ -33,15 +28,15 @@ You can enable and disable the conversion by setting the switch property. Also y
 writtenMongolKeyboard.switch = true
 ```
 
-### Change event
+### Change Event  
 ```typescript
 writtenMongolKeyboard.onChange((change) => {
   // Do something
 })
 ```
-
+Type of 'change' parameter
 ```typescript
-// typeof change
+// 
 {
   selectedWord: string
   selectedWordBeforeConversion: string
@@ -66,9 +61,8 @@ writtenMongolKeyboard.onSwitch((isOn) => {
   // Do something
 })
 ```
-
+typeof 'isOn' parameter
 ```typescript
-// typeof 'isOn' parameter
 {
   switch: boolean
 }
