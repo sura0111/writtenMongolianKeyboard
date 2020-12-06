@@ -1,11 +1,12 @@
 {
   "name": "written-mongol-keyboard",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix"
+    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
+    "deploy": "yarn build && rimraf written-mongol* && npm pack && npm publish --access public"
   },
   "husky": {
     "hooks": {
