@@ -5,7 +5,7 @@ export default class MongolianWritten {
     private localLastChange;
     private get lastChange();
     private set lastChange(value);
-    resetChange(): void;
+    private resetChange;
     private onKeydown;
     private eventListeners;
     onChange(callback: MonWritten.Keyboard.Event.Change): void;
@@ -13,7 +13,7 @@ export default class MongolianWritten {
     private emitChange;
     private emitEnter;
     private emitSpace;
-    select(tipId: number): Promise<void>;
+    select(tipId: number): void;
     private insertMongolianWritten;
     private isConvertableKeys;
     private isSpecialKeys;

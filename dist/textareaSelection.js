@@ -23,7 +23,8 @@ class TextAreaSelection {
     insertText(text, target, remove) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (!remove) {
-                return document.execCommand('insertText', false, text);
+                document.execCommand('insertText', false, text);
+                return;
             }
             const element = this.element(target);
             if (!element || !element.selectionStart || !element.selectionEnd) {

@@ -149,14 +149,12 @@ class MongolianWritten {
         });
     }
     select(tipId) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const element = this.lastChange.element;
-            element.focus();
-            element.setSelectionRange(this.lastChange.caret.start, this.lastChange.caret.end);
-            this.localLastChange.tipId = tipId;
-            textareaSelection.insertText(`${this.lastChange.tips[tipId].written} `);
-            this.resetChange();
-        });
+        const element = this.lastChange.element;
+        element.focus();
+        element.setSelectionRange(this.lastChange.caret.start, this.lastChange.caret.end);
+        this.localLastChange.tipId = tipId;
+        textareaSelection.insertText(`${this.lastChange.tips[tipId].written} `);
+        this.resetChange();
     }
     insertMongolianWritten(event) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {

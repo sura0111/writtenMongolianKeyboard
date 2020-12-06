@@ -5,7 +5,7 @@ export default class TextAreaSelection {
         left: number;
         top: number;
     } | null;
-    insertText(text: string, target?: Target, remove?: 'word' | 'character' | RegExp): Promise<boolean | undefined>;
+    insertText(text: string, target?: Target, remove?: 'word' | 'character' | RegExp): Promise<void>;
     private selection;
     getSelection(target: Target): Promise<{
         element: Target;
