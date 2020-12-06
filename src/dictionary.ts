@@ -1,7 +1,7 @@
-import { WRITTEN_TO_ALPHABET, MON_WRITTEN } from '@/constants'
-import dictionary from '@/constants/dictionary.json'
+import { WRITTEN_TO_ALPHABET, MON_WRITTEN } from './constants'
+import dictionary from './constants/dictionary.json'
 
-const { dict } = dictionary
+const { dict } = dictionary as { dict: MonWritten.DictionaryList }
 
 enum DictionaryMapper {
   alphabet = 'latin_direct',

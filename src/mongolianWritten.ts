@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { KEY_MAP } from '@/constants'
-import { Dictionary } from '@/dictionary'
-import TextAreaSelection from '@/textareaSelection'
+import { KEY_MAP } from './constants'
+import { Dictionary } from './dictionary'
+import TextAreaSelection from './textareaSelection'
 
 const textareaSelection = new TextAreaSelection()
 
