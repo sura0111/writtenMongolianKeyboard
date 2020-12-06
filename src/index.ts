@@ -139,6 +139,10 @@ export default class WrittenMongolKeyboard {
     this.onChangeListener = callback
   }
 
+  public onSwitch(callback: WrittenMongol.Keyboard.Event.Switch): void {
+    this.onSwitchListener = callback
+  }
+
   public async selectConversion(conversionId: number): Promise<void> {
     this.element.focus()
     this.element.setSelectionRange(this.state.caret.start, this.state.caret.end)
