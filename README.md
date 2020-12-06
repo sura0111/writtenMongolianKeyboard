@@ -1,6 +1,5 @@
 # Written Mongol Keyboard
 
-## About this package
 "written-mongol-keyboard" is a library that converts `alphabet character input` and `cyrillic character input` in textarea and input tags to ancient Mongolian characters.  
 
 It also has `builtInConversionView` and uses an open source dictionary. This will show you the closest conversion word choices.
