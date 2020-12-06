@@ -5,8 +5,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
-    "deploy": "yarn build && rimraf written-mongol* && npm pack && npm publish --access public"
+    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix"
   },
   "husky": {
     "hooks": {
