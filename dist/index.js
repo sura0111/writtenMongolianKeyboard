@@ -115,6 +115,9 @@ class WrittenMongolKeyboard {
     onChange(callback) {
         this.onChangeListener = callback;
     }
+    onSwitch(callback) {
+        this.onSwitchListener = callback;
+    }
     selectConversion(conversionId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.element.focus();

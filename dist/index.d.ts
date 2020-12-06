@@ -23,6 +23,7 @@ export default class WrittenMongolKeyboard {
     private get state();
     private set state(value);
     onChange(callback: WrittenMongol.Keyboard.Event.Change): void;
+    onSwitch(callback: WrittenMongol.Keyboard.Event.Switch): void;
     selectConversion(conversionId: number): Promise<void>;
     private static getAcceptedElement;
     private changeConversion;
