@@ -71,3 +71,6 @@ This method can be called from onChange event etc if you needed. It will replace
 ```typescript
 writtenMongolKeyboard.selectConversion(id)
 ```
+
+## Limitations
+This library is currently only working on the textarea, and input tags. Content editable elements are not available.
