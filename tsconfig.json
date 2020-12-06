@@ -3,7 +3,6 @@
     "target": "ES6",
     "module": "CommonJS",
     "strict": true,
-    "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -15,10 +14,9 @@
     "allowJs": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "rootDir": "src",
     "typeRoots": [
       "node_modules",
-      "@types"
+      "src/@types"
     ],
     "outDir": "dist",
     "types": [
@@ -44,6 +42,5 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
   ]
 }
