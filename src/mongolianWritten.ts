@@ -32,7 +32,7 @@ export default class MongolianWritten {
     }
   }
 
-  resetChange() {
+  private resetChange() {
     this.lastChange = {
       word: '',
       precedingWord: null,
@@ -84,11 +84,11 @@ export default class MongolianWritten {
     onChange: null as null | MonWritten.Keyboard.Event.Change,
   }
 
-  public onChange(callback: MonWritten.Keyboard.Event.Change) {
+  public onChange(callback: MonWritten.Keyboard.Event.Change): void {
     this.eventListeners.onChange = callback
   }
 
-  public turn(start = true) {
+  public turn(start = true): void {
     if (start) {
       if (!this.isEnabled) {
         MongolianWritten.listener = (event: KeyboardEvent) => this.onKeydown(event)
@@ -166,7 +166,7 @@ export default class MongolianWritten {
     }
   }
 
-  public async select(tipId: number) {
+  public select(tipId: number): void {
     const element = this.lastChange.element!
     element.focus()
     element.setSelectionRange(this.lastChange.caret.start, this.lastChange.caret.end)

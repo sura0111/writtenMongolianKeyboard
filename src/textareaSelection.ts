@@ -21,9 +21,10 @@ export default class TextAreaSelection {
     }
   }
 
-  public async insertText(text: string, target?: Target, remove?: 'word' | 'character' | RegExp) {
+  public async insertText(text: string, target?: Target, remove?: 'word' | 'character' | RegExp): Promise<void> {
     if (!remove) {
-      return document.execCommand('insertText', false, text)
+      document.execCommand('insertText', false, text)
+      return
     }
 
     const element = this.element(target)
