@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ES6",
+    "module": "CommonJS",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
@@ -12,20 +12,24 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "allowJs": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "rootDir": "src",
     "typeRoots": [
       "node_modules",
       "@types"
     ],
-    "outDir": "./dist/",
-    "types": [],
+    "outDir": "dist",
+    "types": [
+      "./src/@types/namespaces"
+    ],
     "paths": {
+      "*": [
+        "src/@types/*",
+      ],
       "@/*": [
         "src/*"
-      ],
-      "*": [
-        "@types",
       ]
     },
     "lib": [
@@ -36,10 +40,11 @@
     ],
   },
   "include": [
-    "src/**/*.ts",
+    "src",
   ],
   "exclude": [
     "node_modules",
+    "dist/**/*.d.ts",
     "dist"
   ]
 }

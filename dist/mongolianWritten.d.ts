@@ -1,3 +1,4 @@
+/// <reference types="./src/@types/namespaces" />
 export default class MongolianWritten {
     private static listener;
     private isEnabled;

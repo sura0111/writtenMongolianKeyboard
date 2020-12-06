@@ -1,3 +1,4 @@
+/// <reference types="./src/@types/namespaces" />
 export declare class Dictionary {
     private static maxCandidatesPerType;
     private static generateCandidateWords;
