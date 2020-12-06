@@ -1,7 +1,7 @@
 export { default as KEY_MAP } from './keyMap'
 export { default as WRITTEN_TO_ALPHABET } from './writtenToAlphabetMap'
 
-export enum MON_WRITTEN_KEY {
+export enum WRITTEN_MONGOL_KEY {
   a = 'ᠠ',
   b = 'ᠪ',
   ch = 'ᠴ',
@@ -33,7 +33,7 @@ export enum MON_WRITTEN_KEY {
   ng = 'ᠩ',
 }
 
-export const MON_WRITTEN = {
+export const WRITTEN_MONGOL_TYPE = {
   vovels: ['ᠠ', 'ᠶ', 'ᠣ', 'ᠢ', 'ᠥ', 'ᠣ', 'ᠥ', 'ᠡ', '᠊ᠢ', 'ᡀ', 'ᠩ'] as (string | undefined | null)[],
   consonants: ['ᠪ', 'ᠸ', 'ᠭ', 'ᠳ', 'ᠵ', 'ᠺ', 'ᠯ', 'ᠮ', 'ᠨ', 'ᠫ', 'ᠷ', 'ᠰ', 'ᠲ', 'ᠹ', 'ᠬ', 'ᠴ', 'ᠱ', 'ᠽ', 'ᠼ', 'ᠩ'] as (
     | string

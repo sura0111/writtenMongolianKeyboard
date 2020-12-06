@@ -4,146 +4,259 @@ const tslib_1 = require("tslib");
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 const constants_1 = require("./constants");
 const dictionary_1 = require("./dictionary");
-const textareaSelection_1 = tslib_1.__importDefault(require("./textareaSelection"));
-class MongolianWritten {
-    constructor() {
-        this.isEnabled = false;
-        this.onKeydown = (event) => {
-            const element = this.selection.element(event.target);
-            if (!this.isEnabled ||
-                !element ||
-                (this.lastChange.element && this.lastChange.element.textContent !== element.textContent) ||
-                this.isSpecialKeys(event)) {
-                this.resetChange();
+const textarea_caret_1 = tslib_1.__importDefault(require("textarea-caret"));
+const index_1 = require("./constants/index");
+const builtInConversionHtml_1 = tslib_1.__importDefault(require("./builtInConversionHtml"));
+const builtInConversionStyle_1 = tslib_1.__importDefault(require("./builtInConversionStyle"));
+class WrittenMongolKeyboard {
+    constructor(target, options) {
+        var _a;
+        this.builtInView = null;
+        this.localSwitch = false;
+        this.main = (event) => {
+            var _a;
+            const element = WrittenMongolKeyboard.getAcceptedElement(event);
+            const isPreviousElement = !this.state.element || this.state.element.value === (element === null || element === void 0 ? void 0 : element.value);
+            const canProceed = this.switch && element && isPreviousElement && !this.isSpecialKeys(event);
+            if (this.isSpecialKeys(event) && (event.key === 'm' || event.key === 'т')) {
+                event.preventDefault();
+                this.resetState();
+                this.switch = !this.switch;
+                console.log(this.switch);
                 return;
             }
-            this.lastChange.element = element;
-            this.lastChange.coordinate = this.selection.coordinate(element);
+            if (!canProceed) {
+                return this.resetState();
+            }
+            this.state.element = (_a = this.element) !== null && _a !== void 0 ? _a : element;
+            this.state.coordinate = this.coordinate;
             if (this.isConvertableKeys(event)) {
-                this.insertMongolianWritten(event);
+                event.preventDefault();
+                this.convertKey(event);
+                this.updateState();
+                return;
             }
             switch (event.key) {
                 case 'Backspace':
-                    // this.textareaSelection.insertTextWithRemove(element, '', 'character')
-                    this.emitChange();
+                    this.removeCharacterBeforeSelection().then(() => this.updateState());
                     return;
                 case ' ':
                 case 'ArrowLeft':
                 case 'ArrowRight':
-                    return this.emitSpace(event, event.key === 'ArrowLeft' ? -1 : 1);
+                    return this.changeConversion(event, event.key === 'ArrowLeft' ? -1 : 1);
                 case 'Enter':
-                    return this.emitEnter(event);
+                    const preventDefault = this.confirmConversion();
+                    if (preventDefault) {
+                        event.preventDefault();
+                        return false;
+                    }
                 default:
                     break;
             }
         };
-        this.localLastChange = this.getDefaultChangeData();
-        this.onChangeListener = null;
-        this.selection = new textareaSelection_1.default();
-    }
-    get lastChange() {
-        return this.localLastChange;
-    }
-    set lastChange(value) {
-        this.localLastChange = value;
-        if (this.onChangeListener) {
-            this.onChangeListener(value);
+        this._change = this.getDefaultState();
+        this.onChangeListener = () => undefined;
+        this.onSwitchListener = () => undefined;
+        this.predefinedElement = target;
+        this.hasPredefinedElement = target !== undefined;
+        this.mainElement.addEventListener(WrittenMongolKeyboard.EVENT_TYPE, this.main);
+        this.hasBuiltInConversionView =
+            (options === null || options === void 0 ? void 0 : options.hasBuiltInConversionView) !== undefined ? options.hasBuiltInConversionView : true;
+        dictionary_1.Dictionary.maxConversions = (_a = options === null || options === void 0 ? void 0 : options.maxConversions) !== null && _a !== void 0 ? _a : 8;
+        if (this.hasBuiltInConversionView) {
+            const div = document.createElement('div');
+            div.id = 'writtenMongolKeyboard';
+            this.builtInView = div;
+            document.body.appendChild(div);
+            const style = document.createElement('style');
+            style.innerHTML = builtInConversionStyle_1.default;
+            document.head.appendChild(style);
         }
+    }
+    get switch() {
+        return this.localSwitch;
+    }
+    set switch(value) {
+        this.localSwitch = value;
+        this.resetState();
+        this.onSwitchListener(value);
+    }
+    get coordinate() {
+        var _a;
+        const element = this.element;
+        const container = element.getBoundingClientRect();
+        const { left, top } = textarea_caret_1.default(element, (_a = element.selectionEnd) !== null && _a !== void 0 ? _a : 0);
+        return { left: container.left + left, top: container.top + top };
+    }
+    get element() {
+        return this.hasPredefinedElement ? this.predefinedElement : this.state.element;
+    }
+    get mainElement() {
+        return (this.hasPredefinedElement ? this.predefinedElement : document);
+    }
+    get state() {
+        return this._change;
+    }
+    set state(value) {
+        this.onChangeListener(value);
+        if (this.builtInView) {
+            this.builtInView.innerHTML = builtInConversionHtml_1.default(value);
+            document.querySelectorAll('.writtenMongolKeyboardConversions_item').forEach((div) => {
+                const selection = (id) => this.selectConversion(id);
+                div.addEventListener('click', function () {
+                    const id = Number(this.getAttribute('data-id'));
+                    console.log(id);
+                    selection(id);
+                });
+            });
+        }
+        this._change = value;
     }
     onChange(callback) {
         this.onChangeListener = callback;
     }
-    select(tipId) {
-        const element = this.lastChange.element;
-        element.focus();
-        element.setSelectionRange(this.lastChange.caret.start, this.lastChange.caret.end);
-        this.localLastChange.tipId = tipId;
-        this.selection.insertText(`${this.lastChange.tips[tipId].written} `);
-        this.resetChange();
+    selectConversion(conversionId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.element.focus();
+            this.element.setSelectionRange(this.state.caret.start, this.state.caret.end);
+            this._change.conversionId = conversionId;
+            yield this.insertTextAtSelection(this.state.conversions[conversionId].written);
+            this.resetState();
+        });
     }
-    turn(start = true) {
-        if (start) {
-            if (!this.isEnabled) {
-                document.addEventListener('keydown', this.onKeydown);
-                this.isEnabled = true;
-            }
-        }
-        else {
-            document.removeEventListener('keydown', this.onKeydown);
-            this.isEnabled = false;
-            this.resetChange();
-        }
+    static getAcceptedElement(event) {
+        const element = event.target;
+        return WrittenMongolKeyboard.ACCEPTED_TAG_NAMES.includes(element === null || element === void 0 ? void 0 : element.tagName)
+            ? element
+            : null;
     }
-    emitChange() {
+    changeConversion(event, add = 1) {
         var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const element = this.lastChange.element;
-            if (!element) {
-                return this.resetChange();
-            }
-            const selection = yield this.selection.getSelection(element);
-            if (!selection) {
-                return this.resetChange();
-            }
-            this.lastChange = {
-                word: selection.current.word,
-                precedingWord: (_a = selection === null || selection === void 0 ? void 0 : selection.preceding.word) !== null && _a !== void 0 ? _a : null,
-                original: selection.current.word,
-                tips: selection.current.word ? dictionary_1.Dictionary.getCandidates(selection.current.word, selection.preceding.word) : [],
-                tipId: 0,
-                coordinate: this.selection.coordinate(element),
-                caret: { start: selection.current.start, end: selection.current.end },
-                element,
-            };
-        });
-    }
-    emitEnter(event) {
-        var _a, _b;
-        const element = this.lastChange.element;
-        const tipId = this.lastChange.tipId;
-        const tipWord = (_b = (_a = this.lastChange.tips[tipId]) === null || _a === void 0 ? void 0 : _a.written) !== null && _b !== void 0 ? _b : undefined;
-        if (tipWord) {
-            event === null || event === void 0 ? void 0 : event.preventDefault();
-            event === null || event === void 0 ? void 0 : event.stopPropagation();
-            this.selection.insertText(`${tipWord} `, element, 'word');
-            setTimeout(() => this.emitChange());
-            return false;
-        }
-    }
-    emitSpace(event, add = 1) {
-        var _a, _b, _c;
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (this.lastChange.tips.length > 0) {
+            if (this.state.conversions.length > 0) {
                 event.preventDefault();
-                const element = this.lastChange.element;
-                const selection = yield this.selection.getSelection(element);
-                if (selection) {
-                    const previousId = this.lastChange.tipId;
-                    const previousTipWord = (_a = this.lastChange.tips[previousId]) === null || _a === void 0 ? void 0 : _a.written;
-                    const nextTipIp = this.lastChange.tips[previousId + add] !== undefined ? previousId + add : 0;
-                    const nextTipWord = (_b = this.lastChange.tips[nextTipIp]) === null || _b === void 0 ? void 0 : _b.written;
-                    if (previousTipWord === selection.current.word) {
-                        this.selection.insertText(nextTipWord, element, 'word');
-                    }
-                    const currentSelection = yield this.selection.getSelection(element);
-                    this.lastChange = Object.assign(Object.assign({}, this.lastChange), { word: nextTipWord, tipId: nextTipIp, caret: (_c = currentSelection === null || currentSelection === void 0 ? void 0 : currentSelection.current) !== null && _c !== void 0 ? _c : { end: 0, start: 0 } });
+                const tempConversionId = this.state.conversionId + add;
+                const conversionId = this.state.conversions[tempConversionId] !== undefined ? tempConversionId : 0;
+                const selectedWord = (_a = this.state.conversions[conversionId]) === null || _a === void 0 ? void 0 : _a.written;
+                this.insertTextAtSelection(selectedWord, { removePattern: 'word', insertSpace: false });
+                const selection = yield this.getSelectionAfterInput();
+                if (!selection) {
+                    return this.resetState();
                 }
+                this.state = Object.assign(Object.assign({}, this.state), { selectedWord,
+                    conversionId, caret: selection.caret });
             }
         });
     }
-    insertMongolianWritten(event) {
+    confirmConversion() {
+        var _a, _b;
+        const conversionId = this.state.conversionId;
+        const conversionWord = (_b = (_a = this.state.conversions[conversionId]) === null || _a === void 0 ? void 0 : _a.written) !== null && _b !== void 0 ? _b : undefined;
+        if (conversionWord) {
+            this.insertTextAtSelection(conversionWord, { removePattern: 'word' }).then(() => this.resetState());
+            return true;
+        }
+        this.resetState();
+        return false;
+    }
+    convertKey(event) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            event.preventDefault();
             const keyword = event.key.toLowerCase();
-            const element = this.lastChange.element;
-            const selection = yield this.selection.getSelection(element);
-            if ((selection === null || selection === void 0 ? void 0 : selection.current.word) === 'ᠯ' && (keyword === 'h' || keyword === 'х')) {
-                this.selection.insertText('ᡀ', element, 'word');
+            const selection = this.getSelectionBeforeInput();
+            // convert 'lh' or 'лх' to 'ᡀ' if the word is started with it
+            if ((selection === null || selection === void 0 ? void 0 : selection.selectedWord) === 'ᠯ' && (keyword === 'h' || keyword === 'х')) {
+                this.insertTextAtSelection('ᡀ', { removePattern: 'word', insertSpace: false });
+                return;
             }
-            else {
-                this.selection.insertText(this.writtenKey(event));
+            this.insertTextAtSelection(this.getConvertedKey(event), { insertSpace: false });
+        });
+    }
+    getConvertedKey(event) {
+        var _a, _b;
+        const lowerCaseKey = event.key.toLowerCase();
+        const keyCode = `${event.shiftKey ? 'shift' : ''}${lowerCaseKey}`;
+        return (_b = (_a = constants_1.KEY_MAP[keyCode]) !== null && _a !== void 0 ? _a : constants_1.KEY_MAP[lowerCaseKey]) !== null && _b !== void 0 ? _b : event.key;
+    }
+    getDefaultState() {
+        var _a;
+        return {
+            selectedWord: '',
+            selectedWordBeforeConversion: '',
+            wordBeforeSelectedWord: '',
+            conversionId: 0,
+            conversions: [],
+            element: (_a = this.predefinedElement) !== null && _a !== void 0 ? _a : null,
+            coordinate: { left: 0, top: 0 },
+            caret: { start: 0, end: 0 },
+        };
+    }
+    getSelectionAfterInput() {
+        return new Promise((resolve) => {
+            setTimeout(() => resolve(this.getSelectionBeforeInput()));
+        });
+    }
+    getSelectionBeforeInput() {
+        var _a;
+        const { selectionEnd, selectionStart, value } = (_a = this.element) !== null && _a !== void 0 ? _a : {};
+        const isCollapsed = selectionStart === selectionEnd;
+        if (!selectionEnd || !selectionStart || !isCollapsed) {
+            return null;
+        }
+        // TODO: make more simple
+        const startIndex = value.substr(0, selectionStart).replace(/\n/, ' ').split(' ').slice(0, -1).join(' ').length;
+        const endIndex = value.substr(selectionStart).replace(/\n/, ' ').split(' ').slice(0, 1)[0].length;
+        const end = endIndex < 1 ? value.length : selectionStart + endIndex;
+        const precedingText = value.substring(0, startIndex);
+        const currentWord = value.substring(startIndex, end);
+        const selectedWord = currentWord.trim();
+        const wordBeforeSelectedWord = precedingText.replace(/^.+\s/, '');
+        const start = currentWord.indexOf(' ') === 0 ? startIndex + 1 : startIndex;
+        const data = {
+            selectedWord,
+            caret: {
+                start,
+                end,
+            },
+            element: this.element,
+            wordBeforeSelectedWord: precedingText.replace(/^.+\s/, ''),
+            textBeforeSelectedWord: precedingText,
+            coordinate: this.coordinate,
+            conversions: selectedWord ? dictionary_1.Dictionary.getConversions(selectedWord, wordBeforeSelectedWord) : [],
+        };
+        return data;
+    }
+    /**
+     * @description by default it inserts space after the text insertion
+     */
+    insertTextAtSelection(inputText, options) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const insertSpaceAfter = (options === null || options === void 0 ? void 0 : options.insertSpace) !== undefined ? options.insertSpace : true;
+            const removePattern = options === null || options === void 0 ? void 0 : options.removePattern;
+            const { selectionEnd, selectionStart } = this.element;
+            const text = insertSpaceAfter ? `${inputText} ` : inputText;
+            if (selectionEnd === null || selectionStart === null) {
+                return;
             }
-            this.emitChange();
+            if (removePattern === undefined) {
+                return document.execCommand('insertText', false, text);
+            }
+            if (removePattern === 'character') {
+                this.element.setSelectionRange(Math.max(selectionStart - 1, 0), selectionEnd);
+                document.execCommand('insertText', false, text);
+                return;
+            }
+            const selection = yield this.getSelectionAfterInput();
+            if (!selection) {
+                return;
+            }
+            if (removePattern === 'word') {
+                this.element.setSelectionRange(selection.caret.start, selection.caret.end);
+                document.execCommand('insertText', false, text);
+                return;
+            }
+            const start = selection.textBeforeSelectedWord.replace(removePattern, '').length;
+            this.element.setSelectionRange(start, selection.caret.end);
+            document.execCommand('insertText', false, text);
         });
     }
     isConvertableKeys(ev) {
@@ -153,27 +266,28 @@ class MongolianWritten {
     isSpecialKeys(event) {
         return (event.ctrlKey && !event.metaKey) || (!event.ctrlKey && event.metaKey);
     }
-    getDefaultChangeData() {
-        return {
-            word: '',
-            precedingWord: null,
-            original: '',
-            tips: [],
-            tipId: 0,
-            coordinate: { left: 0, top: 0 },
-            element: null,
-            caret: { start: 0, end: 0 },
-        };
+    resetState() {
+        this.state = this.getDefaultState();
     }
-    resetChange() {
-        this.lastChange = this.getDefaultChangeData();
+    updateState() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const selection = yield this.getSelectionAfterInput();
+            if (!selection) {
+                return this.resetState();
+            }
+            this.state = Object.assign(Object.assign({}, selection), { selectedWordBeforeConversion: selection.selectedWord, conversionId: 0 });
+        });
     }
-    writtenKey(event) {
-        var _a, _b;
-        const lowerCaseKey = event.key.toLowerCase();
-        const keyCode = `${event.shiftKey ? 'shift' : ''}${lowerCaseKey}`;
-        return (_b = (_a = constants_1.KEY_MAP[keyCode]) !== null && _a !== void 0 ? _a : constants_1.KEY_MAP[lowerCaseKey]) !== null && _b !== void 0 ? _b : event.key;
+    removeCharacterBeforeSelection() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const selection = yield this.getSelectionAfterInput();
+            if ((selection === null || selection === void 0 ? void 0 : selection.selectedWord.substr(-1)) === index_1.WRITTEN_MONGOL_KEY.connector) {
+                this.insertTextAtSelection('', { removePattern: 'character', insertSpace: false });
+            }
+        });
     }
 }
-exports.default = MongolianWritten;
+exports.default = WrittenMongolKeyboard;
+WrittenMongolKeyboard.ACCEPTED_TAG_NAMES = ['TEXTAREA', 'INPUT'];
+WrittenMongolKeyboard.EVENT_TYPE = 'keydown';
 //# sourceMappingURL=index.js.map

@@ -1,17 +1,17 @@
-declare namespace MonWritten {
+declare namespace WrittenMongol {
   namespace Keyboard {
     namespace Type {
-      interface Change {
-        word: string
-        original: string
-        precedingWord: string | null
-        tips: MonWritten.DictionaryList
-        tipId: number
+      interface State {
+        selectedWord: string
+        selectedWordBeforeConversion: string
+        wordBeforeSelectedWord: string
+        element: HTMLInputElement | HTMLTextAreaElement | null
+        conversions: WrittenMongol.DictionaryList
+        conversionId: number
         coordinate: {
           left: number
           top: number
-        } | null
-        element: HTMLInputElement | HTMLTextAreaElement | null
+        }
         caret: {
           start: number
           end: number
@@ -20,7 +20,10 @@ declare namespace MonWritten {
     }
     namespace Event {
       interface Change {
-        (event: Type.Change): void
+        (event: Type.State): void
+      }
+      interface Switch {
+        (isOn: boolean): void
       }
     }
   }

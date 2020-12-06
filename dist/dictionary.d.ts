@@ -1,10 +1,10 @@
 /// <reference types="./src/@types/namespaces" />
 export declare class Dictionary {
-    private static maxCandidatesPerType;
-    private static generateCandidateWords;
+    static maxConversions: number;
+    private static generateConversionWords;
     private static cyrillic;
     private static alphabet;
-    private static getCandidatesFromType;
-    private static getCandidatesFromWritten;
-    static getCandidates(text: string, precedingWord?: string): MonWritten.DictionaryList;
+    private static getConversionsFromType;
+    private static getConversionsFromWritten;
+    static getConversions(text: string, precedingWord?: string): WrittenMongol.DictionaryList;
 }

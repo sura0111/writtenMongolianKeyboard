@@ -12,7 +12,7 @@ var DictionaryMapper;
     DictionaryMapper["cyrillic"] = "cyrillic";
 })(DictionaryMapper || (DictionaryMapper = {}));
 class Dictionary {
-    static generateCandidateWords(chars) {
+    static generateConversionWords(chars) {
         let t = [];
         for (const c1 of chars) {
             let t1;
@@ -32,34 +32,34 @@ class Dictionary {
     }
     static cyrillic(text) {
         const chars = text.split('').map((char) => { var _a, _b; return (_b = (_a = constants_1.WRITTEN_TO_ALPHABET[char]) === null || _a === void 0 ? void 0 : _a.cyrillic) !== null && _b !== void 0 ? _b : [char]; });
-        return Dictionary.generateCandidateWords(chars);
+        return Dictionary.generateConversionWords(chars);
     }
     static alphabet(text) {
         const chars = text.split('').map((char) => { var _a, _b; return (_b = (_a = constants_1.WRITTEN_TO_ALPHABET[char]) === null || _a === void 0 ? void 0 : _a.alphabet) !== null && _b !== void 0 ? _b : [char]; });
-        return Dictionary.generateCandidateWords(chars);
+        return Dictionary.generateConversionWords(chars);
     }
-    static getCandidatesFromType(type, text) {
+    static getConversionsFromType(type, text) {
         return dict
             .filter((item) => { var _a; return ((_a = item[DictionaryMapper[type]]) === null || _a === void 0 ? void 0 : _a.indexOf(text)) === 0; })
             .sort((a, b) => a.written.length - b.written.length)
-            .slice(0, Dictionary.maxCandidatesPerType);
+            .slice(0, Dictionary.maxConversions);
     }
-    static getCandidatesFromWritten(type, text) {
+    static getConversionsFromWritten(type, text) {
         if (type === 'written') {
-            return Dictionary.getCandidatesFromType(type, text);
+            return Dictionary.getConversionsFromType(type, text);
         }
         return [].concat(...Dictionary[type](text).map((word) => {
-            return Dictionary.getCandidatesFromType(type, word);
+            return Dictionary.getConversionsFromType(type, word);
         }));
     }
-    static getCandidates(text, precedingWord) {
+    static getConversions(text, precedingWord) {
         if (!text) {
             return [];
         }
-        const candidates = [
-            ...Dictionary.getCandidatesFromWritten('written', text),
-            ...Dictionary.getCandidatesFromWritten('cyrillic', text),
-            ...Dictionary.getCandidatesFromWritten('alphabet', text),
+        const conversions = [
+            ...Dictionary.getConversionsFromWritten('written', text),
+            ...Dictionary.getConversionsFromWritten('cyrillic', text),
+            ...Dictionary.getConversionsFromWritten('alphabet', text),
         ]
             .filter((a, i, arr) => a.written &&
             !arr
@@ -67,45 +67,47 @@ class Dictionary {
                 .map((b) => b.written)
                 .includes(a.written))
             .sort((a, b) => a.written.length - b.written.length);
-        if (!candidates.find((item) => item.written === text)) {
-            candidates.splice(0, 0, { written: text });
+        if (!conversions.find((item) => item.written === text)) {
+            conversions.splice(0, 0, { written: text });
         }
         const precedingChar = precedingWord === null || precedingWord === void 0 ? void 0 : precedingWord.slice(-1);
-        if (constants_1.MON_WRITTEN.vovels.includes(precedingChar) && ['᠊ᠣᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
-            candidates.splice(0, 0, { written: '᠊ᠢᠢᠨ' });
+        if (constants_1.WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && ['᠊ᠣᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
+            conversions.splice(0, 0, { written: '᠊ᠢᠢᠨ' });
         }
-        else if (constants_1.MON_WRITTEN.consonantWithoutN.includes(precedingChar) &&
+        else if (constants_1.WRITTEN_MONGOL_TYPE.consonantWithoutN.includes(precedingChar) &&
             ['᠊ᠢᠢᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
-            candidates.splice(0, 0, { written: '᠊ᠣᠨ' });
+            conversions.splice(0, 0, { written: '᠊ᠣᠨ' });
         }
         else if (precedingChar === 'ᠨ' && ['᠊ᠢᠢᠨ', '᠊ᠣᠨ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
-            candidates.splice(0, 0, { written: '᠊ᠣ' });
+            conversions.splice(0, 0, { written: '᠊ᠣ' });
         }
-        else if (constants_1.MON_WRITTEN.vovels.includes(precedingChar) && ['᠊ᠢᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
-            candidates.splice(0, 0, { written: '᠊ᠢ' });
+        else if (constants_1.WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && ['᠊ᠢᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
+            conversions.splice(0, 0, { written: '᠊ᠢ' });
         }
-        else if (constants_1.MON_WRITTEN.consonants.includes(precedingChar) && ['᠊ᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
-            candidates.splice(0, 0, { written: '᠊ᠢᠢ' });
+        else if (constants_1.WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar) && ['᠊ᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
+            conversions.splice(0, 0, { written: '᠊ᠢᠢ' });
         }
         else if ((text === 'ᠠᠠᠰ' || text === 'ᠡᠡᠰ' || text === 'ᠣᠣᠰ') && precedingChar) {
-            candidates.splice(0, 0, { written: 'ᠡᠴᠡ' });
+            conversions.splice(0, 0, { written: 'ᠡᠴᠡ' });
         }
-        else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', 'ᠪᠠᠷ'].includes(text) && constants_1.MON_WRITTEN.consonants.includes(precedingChar)) {
-            candidates.splice(0, 0, { written: '᠊ᠢᠢᠠᠷ' });
+        else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', 'ᠪᠠᠷ'].includes(text) &&
+            constants_1.WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar)) {
+            conversions.splice(0, 0, { written: '᠊ᠢᠢᠠᠷ' });
         }
         else if (['᠊ᠳᠣ', 'ᠳᠣ', 'ᠳᠣᠷ', 'ᠳ', '᠊ᠲᠣ', 'ᠲᠣ', 'ᠲᠣᠷ', '᠊ᠲᠣᠷ', 'ᠲ'].includes(text) &&
-            constants_1.MON_WRITTEN.consonantsSoft.includes(precedingChar)) {
-            candidates.splice(0, 0, { written: '᠊ᠳᠣᠷ' });
+            constants_1.WRITTEN_MONGOL_TYPE.consonantsSoft.includes(precedingChar)) {
+            conversions.splice(0, 0, { written: '᠊ᠳᠣᠷ' });
         }
         else if (['᠊ᠳᠣ', 'ᠳᠣ', '᠊ᠳᠣᠷ', 'ᠳᠣᠷ', 'ᠳ', '᠊ᠲᠣ', 'ᠲᠣ', '᠊ᠲᠣᠷ', 'ᠲ'].includes(text)) {
-            candidates.splice(0, 0, { written: 'ᠲᠣᠷ' });
+            conversions.splice(0, 0, { written: 'ᠲᠣᠷ' });
         }
-        else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', '᠊ᠢᠢᠠᠷ'].includes(text) && constants_1.MON_WRITTEN.vovels.includes(precedingChar)) {
-            candidates.splice(0, 0, { written: 'ᠪᠠᠷ' });
+        else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', '᠊ᠢᠢᠠᠷ'].includes(text) &&
+            constants_1.WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar)) {
+            conversions.splice(0, 0, { written: 'ᠪᠠᠷ' });
         }
-        return candidates;
+        return conversions;
     }
 }
 exports.Dictionary = Dictionary;
-Dictionary.maxCandidatesPerType = 10;
+Dictionary.maxConversions = 10;
 //# sourceMappingURL=dictionary.js.map

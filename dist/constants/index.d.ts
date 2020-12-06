@@ -1,6 +1,6 @@
 export { default as KEY_MAP } from './keyMap';
 export { default as WRITTEN_TO_ALPHABET } from './writtenToAlphabetMap';
-export declare enum MON_WRITTEN_KEY {
+export declare enum WRITTEN_MONGOL_KEY {
     a = "\u1820",
     b = "\u182A",
     ch = "\u1834",
@@ -31,7 +31,7 @@ export declare enum MON_WRITTEN_KEY {
     lh = "\u1840",
     ng = "\u1829"
 }
-export declare const MON_WRITTEN: {
+export declare const WRITTEN_MONGOL_TYPE: {
     vovels: (string | null | undefined)[];
     consonants: (string | null | undefined)[];
     consonantWithoutN: (string | null | undefined)[];

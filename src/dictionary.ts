@@ -1,7 +1,7 @@
-import { WRITTEN_TO_ALPHABET, MON_WRITTEN } from './constants'
+import { WRITTEN_TO_ALPHABET, WRITTEN_MONGOL_TYPE } from './constants'
 import dictionary from './constants/dictionary.json'
 
-const { dict } = dictionary as { dict: MonWritten.DictionaryList }
+const { dict } = dictionary as { dict: WrittenMongol.DictionaryList }
 
 enum DictionaryMapper {
   alphabet = 'latin_direct',
@@ -10,8 +10,8 @@ enum DictionaryMapper {
 }
 
 export class Dictionary {
-  private static maxCandidatesPerType = 10
-  private static generateCandidateWords(chars: string[][]) {
+  public static maxConversions = 10
+  private static generateConversionWords(chars: string[][]) {
     let t: string[] = []
     for (const c1 of chars) {
       let t1: string[]
@@ -31,41 +31,41 @@ export class Dictionary {
 
   private static cyrillic(text: string) {
     const chars = text.split('').map((char) => WRITTEN_TO_ALPHABET[char]?.cyrillic ?? [char])
-    return Dictionary.generateCandidateWords(chars)
+    return Dictionary.generateConversionWords(chars)
   }
 
   private static alphabet(text: string) {
     const chars = text.split('').map((char) => WRITTEN_TO_ALPHABET[char]?.alphabet ?? [char])
-    return Dictionary.generateCandidateWords(chars)
+    return Dictionary.generateConversionWords(chars)
   }
 
-  private static getCandidatesFromType(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
+  private static getConversionsFromType(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
     return dict
       .filter((item) => item[DictionaryMapper[type]]?.indexOf(text) === 0)
       .sort((a, b) => a.written.length - b.written.length)
-      .slice(0, Dictionary.maxCandidatesPerType)
+      .slice(0, Dictionary.maxConversions)
   }
 
-  private static getCandidatesFromWritten(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
+  private static getConversionsFromWritten(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
     if (type === 'written') {
-      return Dictionary.getCandidatesFromType(type, text)
+      return Dictionary.getConversionsFromType(type, text)
     }
-    return ([] as MonWritten.DictionaryItem[]).concat(
+    return ([] as WrittenMongol.DictionaryItem[]).concat(
       ...Dictionary[type](text).map((word) => {
-        return Dictionary.getCandidatesFromType(type, word)
+        return Dictionary.getConversionsFromType(type, word)
       }),
     )
   }
 
-  public static getCandidates(text: string, precedingWord?: string): MonWritten.DictionaryList {
+  public static getConversions(text: string, precedingWord?: string): WrittenMongol.DictionaryList {
     if (!text) {
       return []
     }
 
-    const candidates = [
-      ...Dictionary.getCandidatesFromWritten('written', text),
-      ...Dictionary.getCandidatesFromWritten('cyrillic', text),
-      ...Dictionary.getCandidatesFromWritten('alphabet', text),
+    const conversions = [
+      ...Dictionary.getConversionsFromWritten('written', text),
+      ...Dictionary.getConversionsFromWritten('cyrillic', text),
+      ...Dictionary.getConversionsFromWritten('alphabet', text),
     ]
       .filter(
         (a, i, arr) =>
@@ -76,39 +76,45 @@ export class Dictionary {
             .includes(a.written),
       )
       .sort((a, b) => a.written.length - b.written.length)
-    if (!candidates.find((item) => item.written === text)) {
-      candidates.splice(0, 0, { written: text })
+    if (!conversions.find((item) => item.written === text)) {
+      conversions.splice(0, 0, { written: text })
     }
 
     const precedingChar = precedingWord?.slice(-1)
-    if (MON_WRITTEN.vovels.includes(precedingChar) && ['᠊ᠣᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
-      candidates.splice(0, 0, { written: '᠊ᠢᠢᠨ' })
+    if (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && ['᠊ᠣᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
+      conversions.splice(0, 0, { written: '᠊ᠢᠢᠨ' })
     } else if (
-      MON_WRITTEN.consonantWithoutN.includes(precedingChar) &&
+      WRITTEN_MONGOL_TYPE.consonantWithoutN.includes(precedingChar) &&
       ['᠊ᠢᠢᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)
     ) {
-      candidates.splice(0, 0, { written: '᠊ᠣᠨ' })
+      conversions.splice(0, 0, { written: '᠊ᠣᠨ' })
     } else if (precedingChar === 'ᠨ' && ['᠊ᠢᠢᠨ', '᠊ᠣᠨ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
-      candidates.splice(0, 0, { written: '᠊ᠣ' })
-    } else if (MON_WRITTEN.vovels.includes(precedingChar) && ['᠊ᠢᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
-      candidates.splice(0, 0, { written: '᠊ᠢ' })
-    } else if (MON_WRITTEN.consonants.includes(precedingChar) && ['᠊ᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
-      candidates.splice(0, 0, { written: '᠊ᠢᠢ' })
+      conversions.splice(0, 0, { written: '᠊ᠣ' })
+    } else if (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && ['᠊ᠢᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
+      conversions.splice(0, 0, { written: '᠊ᠢ' })
+    } else if (WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar) && ['᠊ᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
+      conversions.splice(0, 0, { written: '᠊ᠢᠢ' })
     } else if ((text === 'ᠠᠠᠰ' || text === 'ᠡᠡᠰ' || text === 'ᠣᠣᠰ') && precedingChar) {
-      candidates.splice(0, 0, { written: 'ᠡᠴᠡ' })
-    } else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', 'ᠪᠠᠷ'].includes(text) && MON_WRITTEN.consonants.includes(precedingChar)) {
-      candidates.splice(0, 0, { written: '᠊ᠢᠢᠠᠷ' })
+      conversions.splice(0, 0, { written: 'ᠡᠴᠡ' })
+    } else if (
+      ['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', 'ᠪᠠᠷ'].includes(text) &&
+      WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar)
+    ) {
+      conversions.splice(0, 0, { written: '᠊ᠢᠢᠠᠷ' })
     } else if (
       ['᠊ᠳᠣ', 'ᠳᠣ', 'ᠳᠣᠷ', 'ᠳ', '᠊ᠲᠣ', 'ᠲᠣ', 'ᠲᠣᠷ', '᠊ᠲᠣᠷ', 'ᠲ'].includes(text) &&
-      MON_WRITTEN.consonantsSoft.includes(precedingChar)
+      WRITTEN_MONGOL_TYPE.consonantsSoft.includes(precedingChar)
     ) {
-      candidates.splice(0, 0, { written: '᠊ᠳᠣᠷ' })
+      conversions.splice(0, 0, { written: '᠊ᠳᠣᠷ' })
     } else if (['᠊ᠳᠣ', 'ᠳᠣ', '᠊ᠳᠣᠷ', 'ᠳᠣᠷ', 'ᠳ', '᠊ᠲᠣ', 'ᠲᠣ', '᠊ᠲᠣᠷ', 'ᠲ'].includes(text)) {
-      candidates.splice(0, 0, { written: 'ᠲᠣᠷ' })
-    } else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', '᠊ᠢᠢᠠᠷ'].includes(text) && MON_WRITTEN.vovels.includes(precedingChar)) {
-      candidates.splice(0, 0, { written: 'ᠪᠠᠷ' })
+      conversions.splice(0, 0, { written: 'ᠲᠣᠷ' })
+    } else if (
+      ['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', '᠊ᠢᠢᠠᠷ'].includes(text) &&
+      WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar)
+    ) {
+      conversions.splice(0, 0, { written: 'ᠪᠠᠷ' })
     }
 
-    return candidates
+    return conversions
   }
 }
