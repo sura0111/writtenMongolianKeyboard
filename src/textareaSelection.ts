@@ -4,9 +4,7 @@ type Target = HTMLInputElement | HTMLTextAreaElement
 
 export default class TextAreaSelection {
   element(target?: HTMLElement | EventTarget | null): Target | null {
-    return ['TEXTAREA', 'INPUT'].includes((target as HTMLElement)?.tagName ?? '')
-      ? (target as Target)
-      : null
+    return ['TEXTAREA', 'INPUT'].includes((target as HTMLElement)?.tagName ?? '') ? (target as Target) : null
   }
 
   public coordinate(target: Target): { left: number; top: number } | null {
@@ -62,18 +60,9 @@ export default class TextAreaSelection {
       return null
     }
 
-    const start = value
-      .substr(0, selectionStart)
-      .replace(/\n/, ' ')
-      .split(' ')
-      .slice(0, -1)
-      .join(' ').length
+    const start = value.substr(0, selectionStart).replace(/\n/, ' ').split(' ').slice(0, -1).join(' ').length
 
-    const endIndex = value
-      .substr(selectionStart)
-      .replace(/\n/, ' ')
-      .split(' ')
-      .slice(0, 1)[0].length
+    const endIndex = value.substr(selectionStart).replace(/\n/, ' ').split(' ').slice(0, 1)[0].length
     const end = endIndex < 1 ? value.length : selectionStart + endIndex
     const precedingText = value.substring(0, start)
     const currentWord = value.substring(start, end)

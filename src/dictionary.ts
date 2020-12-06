@@ -81,10 +81,7 @@ export class Dictionary {
     }
 
     const precedingChar = precedingWord?.slice(-1)
-    if (
-      MON_WRITTEN.vovels.includes(precedingChar) &&
-      ['᠊ᠣᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)
-    ) {
+    if (MON_WRITTEN.vovels.includes(precedingChar) && ['᠊ᠣᠨ', '᠊ᠣ', 'ᠢᠢᠨ', 'ᠣ', 'ᠢᠢ'].includes(text)) {
       candidates.splice(0, 0, { written: '᠊ᠢᠢᠨ' })
     } else if (
       MON_WRITTEN.consonantWithoutN.includes(precedingChar) &&
@@ -95,17 +92,11 @@ export class Dictionary {
       candidates.splice(0, 0, { written: '᠊ᠣ' })
     } else if (MON_WRITTEN.vovels.includes(precedingChar) && ['᠊ᠢᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
       candidates.splice(0, 0, { written: '᠊ᠢ' })
-    } else if (
-      MON_WRITTEN.consonants.includes(precedingChar) &&
-      ['᠊ᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)
-    ) {
+    } else if (MON_WRITTEN.consonants.includes(precedingChar) && ['᠊ᠢ', 'ᠭ', 'ᠢᠢᠭ'].includes(text)) {
       candidates.splice(0, 0, { written: '᠊ᠢᠢ' })
     } else if ((text === 'ᠠᠠᠰ' || text === 'ᠡᠡᠰ' || text === 'ᠣᠣᠰ') && precedingChar) {
       candidates.splice(0, 0, { written: 'ᠡᠴᠡ' })
-    } else if (
-      ['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', 'ᠪᠠᠷ'].includes(text) &&
-      MON_WRITTEN.consonants.includes(precedingChar)
-    ) {
+    } else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', 'ᠪᠠᠷ'].includes(text) && MON_WRITTEN.consonants.includes(precedingChar)) {
       candidates.splice(0, 0, { written: '᠊ᠢᠢᠠᠷ' })
     } else if (
       ['᠊ᠳᠣ', 'ᠳᠣ', 'ᠳᠣᠷ', 'ᠳ', '᠊ᠲᠣ', 'ᠲᠣ', 'ᠲᠣᠷ', '᠊ᠲᠣᠷ', 'ᠲ'].includes(text) &&
@@ -114,10 +105,7 @@ export class Dictionary {
       candidates.splice(0, 0, { written: '᠊ᠳᠣᠷ' })
     } else if (['᠊ᠳᠣ', 'ᠳᠣ', '᠊ᠳᠣᠷ', 'ᠳᠣᠷ', 'ᠳ', '᠊ᠲᠣ', 'ᠲᠣ', '᠊ᠲᠣᠷ', 'ᠲ'].includes(text)) {
       candidates.splice(0, 0, { written: 'ᠲᠣᠷ' })
-    } else if (
-      ['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', '᠊ᠢᠢᠠᠷ'].includes(text) &&
-      MON_WRITTEN.vovels.includes(precedingChar)
-    ) {
+    } else if (['ᠣᠣᠷ', 'ᠥᠥᠷ', 'ᠠᠠᠷ', 'ᠡᠡᠷ', '᠊ᠢᠢᠠᠷ'].includes(text) && MON_WRITTEN.vovels.includes(precedingChar)) {
       candidates.splice(0, 0, { written: 'ᠪᠠᠷ' })
     }
 

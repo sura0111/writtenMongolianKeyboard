@@ -35,48 +35,16 @@ export enum MON_WRITTEN_KEY {
 
 export const MON_WRITTEN = {
   vovels: ['ᠠ', 'ᠶ', 'ᠣ', 'ᠢ', 'ᠥ', 'ᠣ', 'ᠥ', 'ᠡ', '᠊ᠢ', 'ᡀ', 'ᠩ'] as (string | undefined | null)[],
-  consonants: [
-    'ᠪ',
-    'ᠸ',
-    'ᠭ',
-    'ᠳ',
-    'ᠵ',
-    'ᠺ',
-    'ᠯ',
-    'ᠮ',
-    'ᠨ',
-    'ᠫ',
-    'ᠷ',
-    'ᠰ',
-    'ᠲ',
-    'ᠹ',
-    'ᠬ',
-    'ᠴ',
-    'ᠱ',
-    'ᠽ',
-    'ᠼ',
-    'ᠩ',
-  ] as (string | undefined | null)[],
-  consonantWithoutN: [
-    'ᠪ',
-    'ᠸ',
-    'ᠭ',
-    'ᠳ',
-    'ᠵ',
-    'ᠺ',
-    'ᠯ',
-    'ᠮ',
-    'ᠫ',
-    'ᠷ',
-    'ᠰ',
-    'ᠲ',
-    'ᠹ',
-    'ᠬ',
-    'ᠴ',
-    'ᠱ',
-    'ᠽ',
-    'ᠼ',
-  ] as (string | undefined | null)[],
+  consonants: ['ᠪ', 'ᠸ', 'ᠭ', 'ᠳ', 'ᠵ', 'ᠺ', 'ᠯ', 'ᠮ', 'ᠨ', 'ᠫ', 'ᠷ', 'ᠰ', 'ᠲ', 'ᠹ', 'ᠬ', 'ᠴ', 'ᠱ', 'ᠽ', 'ᠼ', 'ᠩ'] as (
+    | string
+    | undefined
+    | null
+  )[],
+  consonantWithoutN: ['ᠪ', 'ᠸ', 'ᠭ', 'ᠳ', 'ᠵ', 'ᠺ', 'ᠯ', 'ᠮ', 'ᠫ', 'ᠷ', 'ᠰ', 'ᠲ', 'ᠹ', 'ᠬ', 'ᠴ', 'ᠱ', 'ᠽ', 'ᠼ'] as (
+    | string
+    | undefined
+    | null
+  )[],
   consonantsHard: ['ᠪ', 'ᠭ', 'ᠵ', 'ᠳ', 'ᠺ', 'ᠫ', 'ᠷ', 'ᠰ', 'ᠲ', 'ᠹ', 'ᠬ', 'ᠴ', 'ᠱ', 'ᠽ', 'ᠼ'] as (
     | string
     | undefined

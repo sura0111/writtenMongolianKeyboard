@@ -116,9 +116,7 @@ export default class MongolianWritten {
       word: selection.current.word,
       precedingWord: selection?.preceding.word ?? null,
       original: selection.current.word,
-      tips: selection.current.word
-        ? Dictionary.getCandidates(selection.current.word, selection.preceding.word)
-        : [],
+      tips: selection.current.word ? Dictionary.getCandidates(selection.current.word, selection.preceding.word) : [],
       tipId: 0,
       coordinate: textareaSelection.coordinate(element),
       caret: { start: selection.current.start, end: selection.current.end },
@@ -149,8 +147,7 @@ export default class MongolianWritten {
       if (selection) {
         const previousId = this.lastChange.tipId
         const previousTipWord = this.lastChange.tips[previousId]?.written
-        const nextTipIp =
-          this.lastChange.tips[previousId + add] !== undefined ? previousId + add : 0
+        const nextTipIp = this.lastChange.tips[previousId + add] !== undefined ? previousId + add : 0
         const nextTipWord = this.lastChange.tips[nextTipIp]?.written
 
         if (previousTipWord === selection.current.word) {
