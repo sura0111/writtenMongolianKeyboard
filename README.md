@@ -35,7 +35,6 @@ writtenMongolKeyboard.onChange((change) => {
 ```
 Type of 'change' parameter
 ```typescript
-// 
 {
   selectedWord: string
   selectedWordBeforeConversion: string
@@ -67,7 +66,7 @@ typeof 'isOn' parameter
 }
 ```
 
-### Change the current word by one of conversion
+### Change the current word by one of the conversion
 This method can be called from onChange event etc if you needed. It will replace the current word by selected conversion word id. You may don't need it, if you use `builtInConversionView`
 ```typescript
 writtenMongolKeyboard.selectConversion(id)
