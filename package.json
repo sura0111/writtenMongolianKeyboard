@@ -1,10 +1,10 @@
 {
   "name": "written-mongol-keyboard",
-  "version": "1.1.4",
+  "version": "1.1.6",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc && cp -rf @types dist",
     "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix"
   },
   "husky": {

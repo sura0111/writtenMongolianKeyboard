@@ -16,15 +16,15 @@
     "baseUrl": ".",
     "typeRoots": [
       "node_modules",
-      "src/@types"
+      "@types"
     ],
     "outDir": "dist",
     "types": [
-      "./src/@types/namespaces"
+      "./@types/namespaces"
     ],
     "paths": {
       "*": [
-        "src/@types/*",
+        "@types/*",
       ],
       "@/*": [
         "src/*"

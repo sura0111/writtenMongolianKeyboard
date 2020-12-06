@@ -1,4 +1,4 @@
-/// <reference types="./src/@types/namespaces" />
+/// <reference types="./@types/namespaces" />
 export default class WrittenMongolKeyboard {
     private static ACCEPTED_TAG_NAMES;
     private static EVENT_TYPE;

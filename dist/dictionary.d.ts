@@ -1,4 +1,4 @@
-/// <reference types="./src/@types/namespaces" />
+/// <reference types="./@types/namespaces" />
 export declare class Dictionary {
     static maxConversions: number;
     private static generateConversionWords;
