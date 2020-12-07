@@ -15,14 +15,21 @@ import WrittenMongolKeyboard from 'written-mongol-keyboard'
 
 const writtenMongolKeyboard = new WrittenMongolKeyboard(target, options)
 ```
+**target**  
+- `target` is optional, and if it is not set, it works on all textarea and input elements  
+
+**options**  
+- `hasBuiltInConversionView` option is optional and the default value is `true`
+- `maxConversion` option is optional and the default value is `8`
+
 ```typescript
-// when target is not set, it works on all textarea and input elements
-target?: HTMLInputElement | HTMLTextAreaElementoptional
-options?: { hasBuiltInConversionView: boolean; maxConversions: number }
+// 
+target?: HTMLInputElement | HTMLTextAreaElement
+options?: { hasBuiltInConversionView?: boolean; maxConversions?: number }
 ```
 
 ### Switcher
-You can enable and disable the conversion by setting the switch property. Also you can toggle switch by typing `(cmd|ctrl) + w`. Everytime when you set this flag, onSwitch event will be triggered
+You can enable and disable the conversion by setting the switch property. Also you can toggle switch by typing `(cmd|ctrl) + m`. Everytime when you set this flag, onSwitch event will be triggered
 ```typescript
 writtenMongolKeyboard.switch = true
 ```
@@ -73,4 +80,5 @@ writtenMongolKeyboard.selectConversion(id)
 ```
 
 ## Limitations
-This library is currently only working on the textarea, and input tags. Content editable elements are not available.
+- Works on only textarea and input tag elements. Content editable elements are not available.
+- Only tested on Chrome Browser
