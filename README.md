@@ -67,9 +67,7 @@ writtenMongolKeyboard.onSwitch((isOn) => {
 ```
 typeof 'isOn' parameter
 ```typescript
-{
-  switch: boolean
-}
+isOn: boolean
 ```
 
 ### Change the current word by one of the conversion
