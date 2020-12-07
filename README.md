@@ -23,7 +23,6 @@ const writtenMongolKeyboard = new WrittenMongolKeyboard(target, options)
 - `maxConversion` option is optional and the default value is `8`
 
 ```typescript
-// 
 target?: HTMLInputElement | HTMLTextAreaElement
 options?: { hasBuiltInConversionView?: boolean; maxConversions?: number }
 ```
