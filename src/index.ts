@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import textareaCaret from 'textarea-caret'
 
-import builtInConversionHtml from './builtInConversionHtml'
-import builtInConversionStyle from './builtInConversionStyle'
-import { KEY_MAP, WRITTEN_MONGOL_KEY } from './database'
-import { DictionaryList, KeyChangeEvent, KeyChangeState, SwitchEvent } from './definitions'
-import { Dictionary } from './dictionary'
+import builtInConversionHtml from '@/builtInConversionHtml'
+import builtInConversionStyle from '@/builtInConversionStyle'
+import { KEY_MAP, WRITTEN_MONGOL_KEY } from '@/database'
+import { DictionaryList, KeyChangeEvent, KeyChangeState, SwitchEvent } from '@/definitions'
+import { Dictionary } from '@/dictionary'
 
 export default class WrittenMongolKeyboard {
   private static ACCEPTED_TAG_NAMES: (string | null | undefined)[] = ['TEXTAREA', 'INPUT']

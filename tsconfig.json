@@ -14,7 +14,10 @@
     "allowJs": true,
     "sourceMap": true,
     "types": ["./@types/namespaces"],
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules"]

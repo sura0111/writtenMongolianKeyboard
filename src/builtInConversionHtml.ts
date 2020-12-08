@@ -1,4 +1,4 @@
-import { KeyChangeState } from './definitions'
+import { KeyChangeState } from '@/definitions'
 
 export default ({ coordinate, conversions, conversionId }: KeyChangeState): string => {
   const left = `${coordinate.left + 15}px`

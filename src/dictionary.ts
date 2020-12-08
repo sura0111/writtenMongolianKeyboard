@@ -1,5 +1,5 @@
-import { DICTIONARY, WRITTEN_MONGOL_TYPE, WRITTEN_TO_ALPHABET } from './database'
-import { DictionaryList } from './definitions'
+import { DICTIONARY, WRITTEN_MONGOL_TYPE, WRITTEN_TO_ALPHABET } from '@/database'
+import { DictionaryList } from '@/definitions'
 
 enum DictionaryMapper {
   alphabet = 'latin_direct',

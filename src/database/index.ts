@@ -1,7 +1,7 @@
-export { default as KEY_MAP } from './keyMap'
-export { default as WRITTEN_TO_ALPHABET } from './writtenToAlphabetMap'
-import Dictionary from './dictionary.json'
-import { DictionaryList } from '../definitions'
+export { default as KEY_MAP } from '@/database/keyMap'
+export { default as WRITTEN_TO_ALPHABET } from '@/database/writtenToAlphabetMap'
+import Dictionary from '@/database/dictionary.json'
+import { DictionaryList } from '@/definitions'
 
 export const DICTIONARY = (Dictionary as { dict: DictionaryList }).dict
 
