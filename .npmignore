@@ -1,8 +1,9 @@
 .eslintignore
 .eslintrc.js
 .gitignore
-.prettierrc
+.prettierrc.js
 @types
 src
 tsconfig.json
 webpack.config.js
+node_modules
