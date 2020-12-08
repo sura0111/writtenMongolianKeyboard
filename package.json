@@ -8,7 +8,7 @@
     "clear": "rimraf dist",
     "compile": "webpack && cp -R @types dist",
     "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
-    "postpublish": "yarn clear",
+    "postpublish": "yarn clear && git push",
     "prepublish": "yarn build"
   },
   "husky": {
