@@ -6,11 +6,11 @@ export default ({ coordinate, conversions, conversionId }: KeyChangeState): stri
   const canDisplay = conversions.length > 0
 
   const conversionElement = conversions
-    .map(({ written, cyrillic }, id) => {
+    .map(({ traditional, cyrillic }, id) => {
       return `<div data-id="${id}" class="writtenMongolKeyboardConversions_item ${
         conversionId === id ? 'writtenMongolConversionActive' : ''
       }">
-  ${written ?? ''}
+  ${traditional ?? ''}
   <span class="writtenMongolKeyboardConversions_itemDescription"> ${cyrillic ?? ''}</span>
 </div>
     `

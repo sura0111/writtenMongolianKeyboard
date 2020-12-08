@@ -1,44 +1,14 @@
 export { default as KEY_MAP } from '@/database/keyMap'
-export { default as WRITTEN_TO_ALPHABET } from '@/database/writtenToAlphabetMap'
-import Dictionary from '@/database/dictionary.json'
+export { default as WRITTEN_TO_LATIN } from '@/database/writtenToLatin'
+import key from '@/database/key'
+import DICT from '@/database/dictionary.json'
 import { DictionaryList } from '@/definitions'
 
-export const DICTIONARY = (Dictionary as { dict: DictionaryList }).dict
-
-export enum WRITTEN_MONGOL_KEY {
-  a = 'ᠠ',
-  b = 'ᠪ',
-  ch = 'ᠴ',
-  d = 'ᠳ',
-  e = 'ᠡ',
-  f = 'ᠹ',
-  g = 'ᠭ',
-  h = 'ᠬ',
-  i = 'ᠢ',
-  j = 'ᠵ',
-  k = 'ᠺ',
-  l = 'ᠯ',
-  m = 'ᠮ',
-  n = 'ᠨ',
-  o = 'ᠣ',
-  p = 'ᠫ',
-  r = 'ᠷ',
-  s = 'ᠰ',
-  t = 'ᠲ',
-  u = 'ᠥ',
-  v = 'ᠸ',
-  w = '᠊',
-  sh = 'ᠱ',
-  y = 'ᠶ',
-  z = 'ᠽ',
-  connector = '᠊',
-  ts = 'ᠼ',
-  lh = 'ᡀ',
-  ng = 'ᠩ',
-}
+export const KEY = key
+export const DICTIONARY = DICT as DictionaryList
 
 export const WRITTEN_MONGOL_TYPE = {
-  vovels: ['ᠠ', 'ᠶ', 'ᠣ', 'ᠢ', 'ᠥ', 'ᠣ', 'ᠥ', 'ᠡ', '᠊ᠢ', 'ᡀ', 'ᠩ'] as (string | undefined | null)[],
+  vovels: [key.a, key.y, key.o, key.ou, key.i, key.u, key.uo, key.e] as (string | undefined | null)[],
   consonants: ['ᠪ', 'ᠸ', 'ᠭ', 'ᠳ', 'ᠵ', 'ᠺ', 'ᠯ', 'ᠮ', 'ᠨ', 'ᠫ', 'ᠷ', 'ᠰ', 'ᠲ', 'ᠹ', 'ᠬ', 'ᠴ', 'ᠱ', 'ᠽ', 'ᠼ', 'ᠩ'] as (
     | string
     | undefined

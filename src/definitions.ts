@@ -1,9 +1,7 @@
 export interface DictionaryItem {
-  cyrillic?: string
-  latin_direct?: string
-  description?: string
-  written: string
-  'phonetic transcription'?: string
+  cyrillic: string
+  latin: string
+  traditional: string
 }
 
 export type DictionaryList = DictionaryItem[]

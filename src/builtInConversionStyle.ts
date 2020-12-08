@@ -11,12 +11,14 @@ export default `
 
   position: absolute;
   background-color: #f0f0f0;
+  border: 1px solid #fff;
   z-index: 1000002;
   left: 0;
   top: 0;
   border-radius: 3px;
   max-width: 360px;
   overflow: scroll;
+  font-size: 16px;
 }
 .writtenMongolKeyboardConversions_item {
   cursor: pointer;

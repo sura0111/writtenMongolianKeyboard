@@ -9,7 +9,8 @@
     "compile": "webpack && cp -R @types dist && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
     "postpublish": "yarn clear && git push",
-    "prepublish": "yarn build"
+    "prepublish": "yarn build",
+    "execute": "ts-node -r tsconfig-paths/register"
   },
   "husky": {
     "hooks": {

@@ -3,7 +3,7 @@ import textareaCaret from 'textarea-caret'
 
 import builtInConversionHtml from '@/builtInConversionHtml'
 import builtInConversionStyle from '@/builtInConversionStyle'
-import { KEY_MAP, WRITTEN_MONGOL_KEY } from '@/database'
+import { KEY_MAP, KEY } from '@/database'
 import { DictionaryList, KeyChangeEvent, KeyChangeState, SwitchEvent } from '@/definitions'
 import { Dictionary } from '@/dictionary'
 
@@ -148,7 +148,7 @@ export default class WrittenMongolKeyboard {
     this.element.focus()
     this.element.setSelectionRange(this.state.caret.start, this.state.caret.end)
     this._change.conversionId = conversionId
-    await this.insertTextAtSelection(this.state.conversions[conversionId].written)
+    await this.insertTextAtSelection(this.state.conversions[conversionId].traditional)
     this.resetState()
   }
 
@@ -165,7 +165,7 @@ export default class WrittenMongolKeyboard {
 
       const tempConversionId = this.state.conversionId + add
       const conversionId = this.state.conversions[tempConversionId] !== undefined ? tempConversionId : 0
-      const selectedWord = this.state.conversions[conversionId]?.written
+      const selectedWord = this.state.conversions[conversionId]?.traditional
 
       this.insertTextAtSelection(selectedWord, { removePattern: 'word', insertSpace: false })
       const selection = await this.getSelectionAfterInput()
@@ -185,7 +185,7 @@ export default class WrittenMongolKeyboard {
 
   private confirmConversion() {
     const conversionId = this.state.conversionId
-    const conversionWord = this.state.conversions[conversionId]?.written ?? undefined
+    const conversionWord = this.state.conversions[conversionId]?.traditional ?? undefined
 
     if (conversionWord) {
       this.insertTextAtSelection(conversionWord, { removePattern: 'word' }).then(() => this.resetState())
@@ -330,7 +330,7 @@ export default class WrittenMongolKeyboard {
 
   private async removeCharacterBeforeSelection() {
     const selection = await this.getSelectionAfterInput()
-    if (selection?.selectedWord.substr(-1) === WRITTEN_MONGOL_KEY.connector) {
+    if (selection?.selectedWord.substr(-1) === KEY.connector) {
       this.insertTextAtSelection('', { removePattern: 'character', insertSpace: false })
     }
   }
