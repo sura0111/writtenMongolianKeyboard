@@ -25,7 +25,6 @@ export default class WrittenMongolKeyboard {
       event.preventDefault()
       this.resetState()
       this.switch = !this.switch
-      console.log(this.switch)
       return
     }
 
@@ -128,7 +127,6 @@ export default class WrittenMongolKeyboard {
         const selection = (id: number) => this.selectConversion(id)
         ;(div as HTMLDivElement).addEventListener('click', function () {
           const id = Number(this.getAttribute('data-id'))
-          console.log(id)
           selection(id)
         })
       })
