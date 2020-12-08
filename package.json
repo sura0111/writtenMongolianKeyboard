@@ -21,7 +21,10 @@
       "eslint --fix"
     ]
   },
-  "repository": "git@github.com:sura0111/writtenMongolianKeyboard.git",
+  "repository": {
+    "url": "git@github.com:sura0111/writtenMongolianKeyboard.git",
+    "type": "git"
+  },
   "author": "sura0111 <sura0111@gmail.com>",
   "license": "MIT",
   "keywords": [
