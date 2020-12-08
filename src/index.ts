@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { KEY_MAP } from './constants'
-import { Dictionary } from './dictionary'
 import textareaCaret from 'textarea-caret'
-import { WRITTEN_MONGOL_KEY } from './constants/index'
+
 import builtInConversionHtml from './builtInConversionHtml'
 import builtInConversionStyle from './builtInConversionStyle'
+import { KEY_MAP, WRITTEN_MONGOL_KEY } from './database'
+import { DictionaryList, KeyChangeEvent, KeyChangeState, SwitchEvent } from './definitions'
+import { Dictionary } from './dictionary'
 
 export default class WrittenMongolKeyboard {
   private static ACCEPTED_TAG_NAMES: (string | null | undefined)[] = ['TEXTAREA', 'INPUT']
   private static EVENT_TYPE: 'keydown' = 'keydown'
 
-  private _change: WrittenMongol.Keyboard.Type.State
-  private hasPredefinedElement: boolean
-  private hasBuiltInConversionView: boolean
+  private _change: KeyChangeState
   private builtInView: HTMLDivElement | null = null
+  private hasBuiltInConversionView: boolean
+  private hasPredefinedElement: boolean
   private localSwitch = false
   private main = (event: KeyboardEvent) => {
     const element = WrittenMongolKeyboard.getAcceptedElement(event)
@@ -61,8 +62,8 @@ export default class WrittenMongolKeyboard {
     }
   }
 
-  private onChangeListener: WrittenMongol.Keyboard.Event.Change
-  private onSwitchListener: WrittenMongol.Keyboard.Event.Switch
+  private onChangeListener: KeyChangeEvent
+  private onSwitchListener: SwitchEvent
   private predefinedElement?: HTMLInputElement | HTMLTextAreaElement
 
   public constructor(
@@ -135,11 +136,11 @@ export default class WrittenMongolKeyboard {
     this._change = value
   }
 
-  public onChange(callback: WrittenMongol.Keyboard.Event.Change): void {
+  public onChange(callback: KeyChangeEvent): void {
     this.onChangeListener = callback
   }
 
-  public onSwitch(callback: WrittenMongol.Keyboard.Event.Switch): void {
+  public onSwitch(callback: SwitchEvent): void {
     this.onSwitchListener = callback
   }
 
@@ -214,7 +215,7 @@ export default class WrittenMongolKeyboard {
     return KEY_MAP[keyCode] ?? KEY_MAP[lowerCaseKey] ?? event.key
   }
 
-  private getDefaultState(): WrittenMongol.Keyboard.Type.State {
+  private getDefaultState(): KeyChangeState {
     return {
       selectedWord: '',
       selectedWordBeforeConversion: '',
@@ -234,7 +235,7 @@ export default class WrittenMongolKeyboard {
     wordBeforeSelectedWord: string
     textBeforeSelectedWord: string
     coordinate: { left: number; top: number }
-    conversions: WrittenMongol.DictionaryList
+    conversions: DictionaryList
   } | null> {
     return new Promise((resolve) => {
       setTimeout(() => resolve(this.getSelectionBeforeInput()))
@@ -327,6 +328,13 @@ export default class WrittenMongolKeyboard {
     return (event.ctrlKey && !event.metaKey) || (!event.ctrlKey && event.metaKey)
   }
 
+  private async removeCharacterBeforeSelection() {
+    const selection = await this.getSelectionAfterInput()
+    if (selection?.selectedWord.substr(-1) === WRITTEN_MONGOL_KEY.connector) {
+      this.insertTextAtSelection('', { removePattern: 'character', insertSpace: false })
+    }
+  }
+
   private resetState() {
     this.state = this.getDefaultState()
   }
@@ -342,13 +350,6 @@ export default class WrittenMongolKeyboard {
       ...selection,
       selectedWordBeforeConversion: selection.selectedWord,
       conversionId: 0,
-    }
-  }
-
-  private async removeCharacterBeforeSelection() {
-    const selection = await this.getSelectionAfterInput()
-    if (selection?.selectedWord.substr(-1) === WRITTEN_MONGOL_KEY.connector) {
-      this.insertTextAtSelection('', { removePattern: 'character', insertSpace: false })
     }
   }
 }

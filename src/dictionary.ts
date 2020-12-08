@@ -1,7 +1,5 @@
-import { WRITTEN_TO_ALPHABET, WRITTEN_MONGOL_TYPE } from './constants'
-import dictionary from './constants/dictionary.json'
-
-const { dict } = dictionary as { dict: WrittenMongol.DictionaryList }
+import { DICTIONARY, WRITTEN_MONGOL_TYPE, WRITTEN_TO_ALPHABET } from './database'
+import { DictionaryList } from './definitions'
 
 enum DictionaryMapper {
   alphabet = 'latin_direct',
@@ -11,53 +9,8 @@ enum DictionaryMapper {
 
 export class Dictionary {
   public static maxConversions = 10
-  private static generateConversionWords(chars: string[][]) {
-    let t: string[] = []
-    for (const c1 of chars) {
-      let t1: string[]
-      if (t.length === 0) {
-        t1 = c1
-      } else {
-        t1 = []
-        for (const c2 of c1) {
-          const t2 = t.slice().map((t) => `${t}${c2}`)
-          t1 = [...t1, ...t2]
-        }
-      }
-      t = t1.slice()
-    }
-    return t
-  }
 
-  private static cyrillic(text: string) {
-    const chars = text.split('').map((char) => WRITTEN_TO_ALPHABET[char]?.cyrillic ?? [char])
-    return Dictionary.generateConversionWords(chars)
-  }
-
-  private static alphabet(text: string) {
-    const chars = text.split('').map((char) => WRITTEN_TO_ALPHABET[char]?.alphabet ?? [char])
-    return Dictionary.generateConversionWords(chars)
-  }
-
-  private static getConversionsFromType(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
-    return dict
-      .filter((item) => item[DictionaryMapper[type]]?.indexOf(text) === 0)
-      .sort((a, b) => a.written.length - b.written.length)
-      .slice(0, Dictionary.maxConversions)
-  }
-
-  private static getConversionsFromWritten(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
-    if (type === 'written') {
-      return Dictionary.getConversionsFromType(type, text)
-    }
-    return ([] as WrittenMongol.DictionaryItem[]).concat(
-      ...Dictionary[type](text).map((word) => {
-        return Dictionary.getConversionsFromType(type, word)
-      }),
-    )
-  }
-
-  public static getConversions(text: string, precedingWord?: string): WrittenMongol.DictionaryList {
+  public static getConversions(text: string, precedingWord?: string): DictionaryList {
     if (!text) {
       return []
     }
@@ -116,5 +69,50 @@ export class Dictionary {
     }
 
     return conversions
+  }
+
+  private static alphabet(text: string) {
+    const chars = text.split('').map((char) => WRITTEN_TO_ALPHABET[char]?.alphabet ?? [char])
+    return Dictionary.generateConversionWords(chars)
+  }
+
+  private static cyrillic(text: string) {
+    const chars = text.split('').map((char) => WRITTEN_TO_ALPHABET[char]?.cyrillic ?? [char])
+    return Dictionary.generateConversionWords(chars)
+  }
+
+  private static generateConversionWords(chars: string[][]) {
+    let t: string[] = []
+    for (const c1 of chars) {
+      let t1: string[]
+      if (t.length === 0) {
+        t1 = c1
+      } else {
+        t1 = []
+        for (const c2 of c1) {
+          const t2 = t.slice().map((t) => `${t}${c2}`)
+          t1 = [...t1, ...t2]
+        }
+      }
+      t = t1.slice()
+    }
+    return t
+  }
+
+  private static getConversionsFromType(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
+    return DICTIONARY.filter((item) => item[DictionaryMapper[type]]?.indexOf(text) === 0)
+      .sort((a, b) => a.written.length - b.written.length)
+      .slice(0, Dictionary.maxConversions)
+  }
+
+  private static getConversionsFromWritten(type: 'cyrillic' | 'written' | 'alphabet', text: string) {
+    if (type === 'written') {
+      return Dictionary.getConversionsFromType(type, text)
+    }
+    return ([] as DictionaryList).concat(
+      ...Dictionary[type](text).map((word) => {
+        return Dictionary.getConversionsFromType(type, word)
+      }),
+    )
   }
 }

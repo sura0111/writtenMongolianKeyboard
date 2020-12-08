@@ -1,11 +1,11 @@
-/// <reference types="./@types/namespaces" />
+import { KeyChangeEvent, SwitchEvent } from './definitions';
 export default class WrittenMongolKeyboard {
     private static ACCEPTED_TAG_NAMES;
     private static EVENT_TYPE;
     private _change;
-    private hasPredefinedElement;
-    private hasBuiltInConversionView;
     private builtInView;
+    private hasBuiltInConversionView;
+    private hasPredefinedElement;
     private localSwitch;
     private main;
     private onChangeListener;
@@ -22,8 +22,8 @@ export default class WrittenMongolKeyboard {
     private get mainElement();
     private get state();
     private set state(value);
-    onChange(callback: WrittenMongol.Keyboard.Event.Change): void;
-    onSwitch(callback: WrittenMongol.Keyboard.Event.Switch): void;
+    onChange(callback: KeyChangeEvent): void;
+    onSwitch(callback: SwitchEvent): void;
     selectConversion(conversionId: number): Promise<void>;
     private static getAcceptedElement;
     private changeConversion;
@@ -39,7 +39,7 @@ export default class WrittenMongolKeyboard {
     private insertTextAtSelection;
     private isConvertableKeys;
     private isSpecialKeys;
+    private removeCharacterBeforeSelection;
     private resetState;
     private updateState;
-    private removeCharacterBeforeSelection;
 }
