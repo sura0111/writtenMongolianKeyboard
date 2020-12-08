@@ -4,8 +4,14 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && webpack",
-    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix"
+    "build": "yarn clear && yarn compile",
+    "clear": "rimraf dist",
+    "compile": "webpack && cp -R @types dist",
+    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
+    "postpack": "yarn clear",
+    "postpublish": "yarn clear",
+    "prepack": "yarn build",
+    "prepublish": "yarn build"
   },
   "husky": {
     "hooks": {

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "CommonJS",
+    "baseUrl": ".",
     "outDir": "dist",
     "strict": true,
     "importHelpers": true,
@@ -12,7 +13,8 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "sourceMap": true,
-    "baseUrl": "."
+    "types": ["./@types/namespaces"],
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

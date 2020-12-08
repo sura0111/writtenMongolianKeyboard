@@ -1,0 +1,8 @@
+.eslintignore
+.eslintrc.js
+.gitignore
+.prettierrc
+@types
+src
+tsconfig.json
+webpack.config.js
