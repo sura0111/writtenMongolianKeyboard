@@ -28,6 +28,10 @@ export default class WrittenMongolKeyboard {
       return
     }
 
+    if (this.isSpecialKeys(event)) {
+      return
+    }
+
     if (!canProceed) {
       return this.resetState()
     }
