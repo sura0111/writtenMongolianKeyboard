@@ -25,7 +25,9 @@ enum KEY {
   sh = 'ᠱ',
   y = 'ᠶ',
   z = 'ᠽ',
-  connector = '᠊',
+  empty = '᠎',
+  connectorWithNoEmptySpace = '᠊',
+  connector = '᠎᠊', // with empty space
   ts = 'ᠼ',
   lh = 'ᡀ',
   ng = 'ᠩ',

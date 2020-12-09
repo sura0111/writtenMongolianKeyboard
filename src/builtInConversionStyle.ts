@@ -19,6 +19,7 @@ export default `
   max-width: 360px;
   overflow: scroll;
   font-size: 16px;
+  min-height: 50px;
 }
 .writtenMongolKeyboardConversions_item {
   cursor: pointer;

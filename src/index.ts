@@ -44,6 +44,7 @@ export default class WrittenMongolKeyboard {
 
     switch (event.key) {
       case 'Backspace':
+        event.preventDefault()
         this.removeCharacterBeforeSelection().then(() => this.updateState())
         return
       case ' ':
@@ -165,7 +166,7 @@ export default class WrittenMongolKeyboard {
       const conversionId = this.state.conversions[tempConversionId] !== undefined ? tempConversionId : 0
       const selectedWord = this.state.conversions[conversionId]?.traditional
 
-      this.insertTextAtSelection(selectedWord, { removePattern: 'word', insertSpace: false })
+      this.insertTextAtSelection(selectedWord, { remove: 'word' })
       const selection = await this.getSelectionAfterInput()
 
       if (!selection) {
@@ -186,7 +187,7 @@ export default class WrittenMongolKeyboard {
     const conversionWord = this.state.conversions[conversionId]?.traditional ?? undefined
 
     if (conversionWord) {
-      this.insertTextAtSelection(conversionWord, { removePattern: 'word' }).then(() => this.resetState())
+      this.insertTextAtSelection(conversionWord, { remove: 'word' }).then(() => this.resetState())
       return true
     }
 
@@ -200,11 +201,11 @@ export default class WrittenMongolKeyboard {
 
     // convert 'lh' or 'лх' to 'ᡀ' if the word is started with it
     if (selection?.selectedWord === 'ᠯ' && (keyword === 'h' || keyword === 'х')) {
-      this.insertTextAtSelection('ᡀ', { removePattern: 'word', insertSpace: false })
+      this.insertTextAtSelection('ᡀ', { remove: 'word' })
       return
     }
 
-    this.insertTextAtSelection(this.getConvertedKey(event), { insertSpace: false })
+    this.insertTextAtSelection(this.getConvertedKey(event))
   }
 
   private getConvertedKey(event: { key: string; shiftKey: boolean }) {
@@ -232,6 +233,7 @@ export default class WrittenMongolKeyboard {
     element: HTMLTextAreaElement | HTMLInputElement
     wordBeforeSelectedWord: string
     textBeforeSelectedWord: string
+    textBeforeSelection: string
     coordinate: { left: number; top: number }
     conversions: DictionaryList
   } | null> {
@@ -248,15 +250,17 @@ export default class WrittenMongolKeyboard {
       return null
     }
 
-    // TODO: make more simple
-    const startIndex = value.substr(0, selectionStart).replace(/\n/, ' ').split(' ').slice(0, -1).join(' ').length
-    const endIndex = value.substr(selectionStart).replace(/\n/, ' ').split(' ').slice(0, 1)[0].length
-    const end = endIndex < 1 ? value.length : selectionStart + endIndex
-    const precedingText = value.substring(0, startIndex)
-    const currentWord = value.substring(startIndex, end)
-    const selectedWord = currentWord.trim()
-    const wordBeforeSelectedWord = precedingText.replace(/^.+\s/, '')
-    const start = currentWord.indexOf(' ') === 0 ? startIndex + 1 : startIndex
+    const textBeforeSelection = value.substr(0, selectionStart)
+    const textAfterSelection = value.substr(selectionStart)
+
+    const start = textBeforeSelection.replace(/([^\s\n]|\w|[\u1800-\u18AF])+$/, '').length
+    const end = selectionEnd + (textAfterSelection.match(/^([^\s\n]|\w|[\u1800-\u18AF])+/) ?? [''])[0].length
+
+    const textBeforeSelectedWord = value.slice(0, start).trimEnd()
+    const selectedWord = value.substr(start, end)
+    const wordBeforeSelectedWord = textBeforeSelectedWord.replace(/^.+\s/, '')
+    const { element, coordinate } = this
+    const conversions = selectedWord ? Dictionary.getConversions(selectedWord, wordBeforeSelectedWord) : []
 
     const data = {
       selectedWord,
@@ -264,11 +268,12 @@ export default class WrittenMongolKeyboard {
         start,
         end,
       },
-      element: this.element,
-      wordBeforeSelectedWord: precedingText.replace(/^.+\s/, ''),
-      textBeforeSelectedWord: precedingText,
-      coordinate: this.coordinate,
-      conversions: selectedWord ? Dictionary.getConversions(selectedWord, wordBeforeSelectedWord) : [],
+      element,
+      wordBeforeSelectedWord,
+      textBeforeSelectedWord,
+      textBeforeSelection,
+      coordinate,
+      conversions,
     }
 
     return data
@@ -277,24 +282,17 @@ export default class WrittenMongolKeyboard {
   /**
    * @description by default it inserts space after the text insertion
    */
-  private async insertTextAtSelection(
-    inputText: string,
-    options?: { insertSpace?: boolean; removePattern?: 'word' | 'character' | RegExp },
-  ) {
-    const insertSpaceAfter = options?.insertSpace !== undefined ? options.insertSpace : true
-    const removePattern = options?.removePattern
+  private async insertTextAtSelection(text: string, options?: { remove?: 'word' | 'character' | RegExp }) {
     const { selectionEnd, selectionStart } = this.element
-    const text = insertSpaceAfter ? `${inputText} ` : inputText
+    if (selectionEnd === null || selectionStart === null) return
 
-    if (selectionEnd === null || selectionStart === null) {
-      return
-    }
+    const remove = options?.remove
 
-    if (removePattern === undefined) {
+    if (remove === undefined) {
       return document.execCommand('insertText', false, text)
     }
 
-    if (removePattern === 'character') {
+    if (remove === 'character') {
       this.element.setSelectionRange(Math.max(selectionStart - 1, 0), selectionEnd)
       document.execCommand('insertText', false, text)
       return
@@ -302,24 +300,21 @@ export default class WrittenMongolKeyboard {
 
     const selection = await this.getSelectionAfterInput()
 
-    if (!selection) {
-      return
-    }
+    if (!selection) return
 
-    if (removePattern === 'word') {
+    if (remove === 'word') {
       this.element.setSelectionRange(selection.caret.start, selection.caret.end)
       document.execCommand('insertText', false, text)
       return
     }
 
-    const start = selection.textBeforeSelectedWord.replace(removePattern, '').length
-    this.element.setSelectionRange(start, selection.caret.end)
+    this.element.setSelectionRange(selection.textBeforeSelection.replace(remove, '').length, selection.caret.end)
     document.execCommand('insertText', false, text)
   }
 
   private isConvertableKeys(ev: KeyboardEvent) {
     const isShiftSpace = ev.key === ' ' && ev.shiftKey
-    return /^([a-zA-Zа-яА-Я]|ө|ү|Ө|Ү)$/.test(ev.key) || isShiftSpace
+    return /^([a-zA-Zа-яА-Я]|ө|ү|Ө|Ү|ё|Ё)$/.test(ev.key) || isShiftSpace
   }
 
   private isSpecialKeys(event: KeyboardEvent) {
@@ -327,9 +322,18 @@ export default class WrittenMongolKeyboard {
   }
 
   private async removeCharacterBeforeSelection() {
+    await this.insertTextAtSelection('', { remove: 'character' })
+
     const selection = await this.getSelectionAfterInput()
-    if (selection?.selectedWord.substr(-1) === KEY.connector) {
-      this.insertTextAtSelection('', { removePattern: 'character', insertSpace: false })
+
+    if (selection?.selectedWord.substr(-2) === KEY.connector) {
+      await this.insertTextAtSelection('', { remove: /᠎᠊$/ })
+    } else if (
+      ([KEY.empty, KEY.connectorWithNoEmptySpace, '\n'] as string[]).includes(
+        selection?.selectedWord.substr(-1) ?? 'none',
+      )
+    ) {
+      await this.insertTextAtSelection('', { remove: 'character' })
     }
   }
 
