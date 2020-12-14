@@ -11,6 +11,8 @@ yarn add written-mongol-keyboard
 ```
 
 ## How to Use
+- For textarea and input elements
+
 ```typescript
 import WrittenMongolKeyboard from 'written-mongol-keyboard'
 
@@ -27,6 +29,15 @@ const writtenMongolKeyboard = new WrittenMongolKeyboard(target, options)
 target?: HTMLInputElement | HTMLTextAreaElement
 options?: { hasBuiltInConversionView?: boolean; maxConversions?: number }
 ```
+- For contenteditable elements
+
+
+```typescript
+import { WrittenMongolForContentEditable } from 'written-mongol-keyboard'
+
+const editor = new WrittenMongolForContentEditable('#writtenMongolEditor')
+```
+
 
 ### Switcher
 You can enable and disable the conversion by setting the switch property. Also you can toggle switch by typing `(cmd|ctrl) + m`. Everytime when you set this flag, onSwitch event will be triggered
@@ -42,6 +53,7 @@ writtenMongolKeyboard.onChange((change) => {
 ```
 Type of 'change' parameter
 ```typescript
+// textarea
 {
   selectedWord: string
   selectedWordBeforeConversion: string
@@ -58,6 +70,9 @@ Type of 'change' parameter
     end: number
   }
 }
+
+// contenteditable
+TODO
 ```
 
 ### Switch event
@@ -100,24 +115,23 @@ writtenMongolKeyboard.selectConversion(id)
 |r|`ᠷ`|
 |s|`ᠰ`|
 |t|`ᠲ`|
-|u|`ᠥ`|
+|u|`ᠤ`|
 |v|`ᠸ`|
 |w|`᠎᠊`|
 |x|`ᠱ`|
 |y|`ᠶ`|
 |z|`ᠵ`|
-|shift + space|`᠎᠊`|
-|shift + a|`᠎᠊ᠠ`|
-|shift + c|`ᠼ`|
-|shift + d|`᠎᠊ᠳ`|
-|shift + e|`᠎᠊ᠡ`|
-|shift + i|`᠎᠊ᠢ`|
-|shift + n|`ᠩ`|
-|shift + o|`ᠤ`|
-|shift + w|`᠎᠊`|
-|shift + t|`᠎᠊ᠲ`|
-|shift + u|`ᠦ`|
-|shift + z|`ᠽ`|
+|shift |`᠊`|
+|shifta|`᠎᠊ᠠ`|
+|shiftc|`ᠼ`|
+|shiftd|`᠊ᠳ`|
+|shifte|`᠎᠊ᠡ`|
+|shifti|`᠊ᠢ`|
+|shiftn|`ᠩ`|
+|shifto|`ᠥ`|
+|shiftt|`᠊ᠲ`|
+|shiftu|`ᠦ`|
+|shiftz|`ᠽ`|
 
 ### Mongolian Cyrillic to Mongolian Traditional
 | key | value |
@@ -157,19 +171,19 @@ writtenMongolKeyboard.selectConversion(id)
 |э|`ᠡ`|
 |ю|`ᠶᠦ`|
 |я|`ᠶᠠ`|
-|shift + а|`᠎ᠠ`|
-|shift + д|`᠊ᠳ`|
-|shift + ц|`ᠼ`|
-|shift + з|`ᠽ`|
-|shift + и|`᠊ᠢ`|
-|shift + н|`ᠩ`|
-|shift + о|`᠊ᠣ`|
-|shift + ө|`᠊ᠥ`|
-|shift + т|`᠊ᠲ`|
-|shift + у|`᠊ᠤ`|
-|shift + ү|`᠊ᠦ`|
-|shift + э|`᠎ᠡ`|
+|shiftа|`᠎᠊ᠠ`|
+|shiftд|`᠊ᠳ`|
+|shiftц|`ᠼ`|
+|shiftз|`ᠽ`|
+|shiftи|`᠊ᠢ`|
+|shiftн|`ᠩ`|
+|shiftо|`᠊ᠣ`|
+|shiftө|`᠊ᠥ`|
+|shiftт|`᠊ᠲ`|
+|shiftу|`᠊ᠤ`|
+|shiftү|`᠊ᠦ`|
+|shiftэ|`᠎᠊ᠡ`|
+
 
 ## Limitations
-- Works on only textarea and input tag elements. Content editable elements are not available.
 - Only tested on Chrome Browser

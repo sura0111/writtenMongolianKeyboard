@@ -1,6 +1,6 @@
-import { KeyChangeState } from '@/definitions'
+import { ConversionViewParameter } from '@/definitions'
 
-export default ({ coordinate, conversions, conversionId }: KeyChangeState): string => {
+export default ({ coordinate, conversions, conversionId }: ConversionViewParameter): string => {
   const left = `${coordinate.left + 15}px`
   const top = `${coordinate.top}px`
   const canDisplay = conversions.length > 0

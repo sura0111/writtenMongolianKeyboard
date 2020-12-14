@@ -36,11 +36,15 @@
   ],
   "dependencies": {
     "@types/textarea-caret": "^3.0.0",
+    "nodemon": "^2.0.6",
     "textarea-caret": "^3.1.0"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.23",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
+    "axios": "^0.21.0",
+    "cheerio": "^1.0.0-rc.3",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.2.0",

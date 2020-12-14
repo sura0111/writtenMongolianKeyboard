@@ -3,19 +3,23 @@ import textareaCaret from 'textarea-caret'
 
 import builtInConversionHtml from '@/builtInConversionHtml'
 import builtInConversionStyle from '@/builtInConversionStyle'
-import { KEY_MAP, KEY } from '@/database'
-import { DictionaryList, KeyChangeEvent, KeyChangeState, SwitchEvent } from '@/definitions'
+import { KEY_MAP, KEY, WRITTEN_MONGOL_TYPE } from '@/database'
+import { KeyChangeEvent, KeyChangeState, SwitchEvent } from '@/definitions'
 import { Dictionary } from '@/dictionary'
+
+export { default as WrittenMongolForContentEditable } from './editable'
 
 export default class WrittenMongolKeyboard {
   private static ACCEPTED_TAG_NAMES: (string | null | undefined)[] = ['TEXTAREA', 'INPUT']
   private static EVENT_TYPE: 'keydown' = 'keydown'
 
-  private _change: KeyChangeState
-  private builtInView: HTMLDivElement | null = null
-  private hasBuiltInConversionView: boolean
+  private _state: KeyChangeState
+  private _switch = true
+  private builtIn: {
+    view: HTMLDivElement
+    style: HTMLStyleElement
+  } | null = null
   private hasPredefinedElement: boolean
-  private localSwitch = false
   private main = (event: KeyboardEvent) => {
     const element = WrittenMongolKeyboard.getAcceptedElement(event)
     const isPreviousElement = !this.state.element || this.state.element.value === element?.value
@@ -74,33 +78,40 @@ export default class WrittenMongolKeyboard {
     target?: HTMLInputElement | HTMLTextAreaElement,
     options?: { hasBuiltInConversionView: boolean; maxConversions: number },
   ) {
-    this._change = this.getDefaultState()
+    this._state = this.getDefaultState()
     this.onChangeListener = () => undefined
     this.onSwitchListener = () => undefined
     this.predefinedElement = target
     this.hasPredefinedElement = target !== undefined
     this.mainElement.addEventListener(WrittenMongolKeyboard.EVENT_TYPE, this.main)
-    this.hasBuiltInConversionView =
-      options?.hasBuiltInConversionView !== undefined ? options.hasBuiltInConversionView : true
+    this.hasBuiltInConversionView = options?.hasBuiltInConversionView
     Dictionary.maxConversions = options?.maxConversions ?? 8
-    if (this.hasBuiltInConversionView) {
-      const div = document.createElement('div')
-      div.id = 'writtenMongolKeyboard'
-      this.builtInView = div
-      document.body.appendChild(div)
+  }
+
+  private set hasBuiltInConversionView(value: boolean | undefined) {
+    if ((value === true || value === undefined) && !this.builtIn) {
+      const view = document.createElement('div')
+      view.id = 'writtenMongolKeyboard'
+      document.body.appendChild(view)
 
       const style = document.createElement('style')
       style.innerHTML = builtInConversionStyle
+      style.id = 'writtenMongolKeyboardStyle'
       document.head.appendChild(style)
+      this.builtIn = { view, style }
+    } else {
+      this.builtIn?.view.remove()
+      this.builtIn?.style.remove()
+      this.builtIn = null
     }
   }
 
   public get switch(): boolean {
-    return this.localSwitch
+    return this._switch
   }
 
   public set switch(value: boolean) {
-    this.localSwitch = value
+    this._switch = value
     this.resetState()
     this.onSwitchListener(value)
   }
@@ -121,13 +132,13 @@ export default class WrittenMongolKeyboard {
   }
 
   private get state() {
-    return this._change
+    return this._state
   }
 
   private set state(value) {
     this.onChangeListener(value)
-    if (this.builtInView) {
-      this.builtInView.innerHTML = builtInConversionHtml(value)
+    if (this.builtIn?.view) {
+      this.builtIn.view.innerHTML = builtInConversionHtml(value)
       document.querySelectorAll('.writtenMongolKeyboardConversions_item').forEach((div) => {
         const selection = (id: number) => this.selectConversion(id)
         ;(div as HTMLDivElement).addEventListener('click', function () {
@@ -136,7 +147,7 @@ export default class WrittenMongolKeyboard {
         })
       })
     }
-    this._change = value
+    this._state = value
   }
 
   public onChange(callback: KeyChangeEvent): void {
@@ -150,7 +161,7 @@ export default class WrittenMongolKeyboard {
   public async selectConversion(conversionId: number): Promise<void> {
     this.element.focus()
     this.element.setSelectionRange(this.state.caret.start, this.state.caret.end)
-    this._change.conversionId = conversionId
+    this._state.conversionId = conversionId
     await this.insertTextAtSelection(this.state.conversions[conversionId].traditional)
     this.resetState()
   }
@@ -171,7 +182,7 @@ export default class WrittenMongolKeyboard {
       const selectedWord = this.state.conversions[conversionId]?.traditional
 
       this.insertTextAtSelection(selectedWord, { remove: 'word' })
-      const selection = await this.getSelectionAfterInput()
+      const selection = await this.getCaretInfoAsync()
 
       if (!selection) {
         return this.resetState()
@@ -201,52 +212,29 @@ export default class WrittenMongolKeyboard {
 
   private async convertKey(event: { key: string; shiftKey: boolean }) {
     const keyword = event.key.toLowerCase()
-    const selection = this.getSelectionBeforeInput()
+    const selection = this.getCaretInfo()
 
     // convert 'lh' or 'лх' to 'ᡀ' if the word is started with it
-    if (selection?.selectedWord === 'ᠯ' && (keyword === 'h' || keyword === 'х')) {
-      this.insertTextAtSelection('ᡀ', { remove: 'word' })
-      return
+    if (selection) {
+      const previousCharacters = selection.textBeforeSelection.substr(-2).padStart(2, ' ').split('')
+      if (!WRITTEN_MONGOL_TYPE.vovels.includes(previousCharacters[0])) {
+        if (previousCharacters[1] === KEY.l && ['h', 'х'].includes(keyword)) {
+          this.insertTextAtSelection(KEY.lh, { remove: 'character' })
+          return
+        } else if (previousCharacters[1] === KEY.ch && keyword === 'h') {
+          this.insertTextAtSelection(KEY.ch, { remove: 'character' })
+          return
+        } else if (previousCharacters[1] === KEY.t && keyword === 's') {
+          this.insertTextAtSelection(KEY.ch, { remove: 'character' })
+          return
+        }
+      }
     }
 
     this.insertTextAtSelection(this.getConvertedKey(event))
   }
 
-  private getConvertedKey(event: { key: string; shiftKey: boolean }) {
-    const lowerCaseKey = event.key.toLowerCase()
-    const keyCode = `${event.shiftKey ? 'shift' : ''}${lowerCaseKey}`
-    return KEY_MAP[keyCode] ?? KEY_MAP[lowerCaseKey] ?? event.key
-  }
-
-  private getDefaultState(): KeyChangeState {
-    return {
-      selectedWord: '',
-      selectedWordBeforeConversion: '',
-      wordBeforeSelectedWord: '',
-      conversionId: 0,
-      conversions: [],
-      element: this.predefinedElement ?? null,
-      coordinate: { left: 0, top: 0 },
-      caret: { start: 0, end: 0 },
-    }
-  }
-
-  private getSelectionAfterInput(): Promise<{
-    selectedWord: string
-    caret: { start: number; end: number }
-    element: HTMLTextAreaElement | HTMLInputElement
-    wordBeforeSelectedWord: string
-    textBeforeSelectedWord: string
-    textBeforeSelection: string
-    coordinate: { left: number; top: number }
-    conversions: DictionaryList
-  } | null> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(this.getSelectionBeforeInput()))
-    })
-  }
-
-  private getSelectionBeforeInput() {
+  private getCaretInfo() {
     const { selectionEnd, selectionStart, value } = this.element ?? {}
     const isCollapsed = selectionStart === selectionEnd
 
@@ -283,6 +271,30 @@ export default class WrittenMongolKeyboard {
     return data
   }
 
+  private async getCaretInfoAsync() {
+    await this.nextTick()
+    return this.getCaretInfo()
+  }
+
+  private getConvertedKey(event: { key: string; shiftKey: boolean }) {
+    const lowerCaseKey = event.key.toLowerCase()
+    const keyCode = `${event.shiftKey ? 'shift' : ''}${lowerCaseKey}`
+    return KEY_MAP[keyCode] ?? KEY_MAP[lowerCaseKey] ?? event.key
+  }
+
+  private getDefaultState(): KeyChangeState {
+    return {
+      selectedWord: '',
+      selectedWordBeforeConversion: '',
+      wordBeforeSelectedWord: '',
+      conversionId: 0,
+      conversions: [],
+      element: this.predefinedElement ?? null,
+      coordinate: { left: 0, top: 0 },
+      caret: { start: 0, end: 0 },
+    }
+  }
+
   /**
    * @description by default it inserts space after the text insertion
    */
@@ -302,7 +314,7 @@ export default class WrittenMongolKeyboard {
       return
     }
 
-    const selection = await this.getSelectionAfterInput()
+    const selection = await this.getCaretInfoAsync()
 
     if (!selection) return
 
@@ -318,17 +330,21 @@ export default class WrittenMongolKeyboard {
 
   private isConvertableKeys(ev: KeyboardEvent) {
     const isShiftSpace = ev.key === ' ' && ev.shiftKey
-    return /^([a-zA-Zа-яА-Я]|ө|ү|Ө|Ү|ё|Ё)$/.test(ev.key) || isShiftSpace
+    return /^[a-zA-Z\u1800-\u18AF\u0400-\u04FF]$/.test(ev.key) || isShiftSpace
   }
 
   private isSpecialKeys(event: KeyboardEvent) {
     return (event.ctrlKey && !event.metaKey) || (!event.ctrlKey && event.metaKey)
   }
 
+  private nextTick(): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve))
+  }
+
   private async removeCharacterBeforeSelection() {
     await this.insertTextAtSelection('', { remove: 'character' })
 
-    const selection = await this.getSelectionAfterInput()
+    const selection = await this.getCaretInfoAsync()
 
     if (selection?.selectedWord.substr(-2) === KEY.connector) {
       await this.insertTextAtSelection('', { remove: /᠎᠊$/ })
@@ -346,7 +362,7 @@ export default class WrittenMongolKeyboard {
   }
 
   private async updateState() {
-    const selection = await this.getSelectionAfterInput()
+    const selection = await this.getCaretInfoAsync()
 
     if (!selection) {
       return this.resetState()

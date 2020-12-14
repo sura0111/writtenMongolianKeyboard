@@ -6,17 +6,24 @@ export interface DictionaryItem {
 
 export type DictionaryList = DictionaryItem[]
 
-export interface KeyChangeState {
-  selectedWord: string
-  selectedWordBeforeConversion: string
-  wordBeforeSelectedWord: string
-  element: HTMLInputElement | HTMLTextAreaElement | null
-  conversions: DictionaryList
-  conversionId: number
+export interface ConversionViewParameter {
   coordinate: {
     left: number
     top: number
   }
+  conversionId: number
+  conversions: DictionaryList
+}
+
+export interface EditableState extends ConversionViewParameter {
+  savedSelection: { start: number; end: number } | null
+}
+
+export interface KeyChangeState extends ConversionViewParameter {
+  selectedWord: string
+  selectedWordBeforeConversion: string
+  wordBeforeSelectedWord: string
+  element: HTMLInputElement | HTMLTextAreaElement | null
   caret: {
     start: number
     end: number
