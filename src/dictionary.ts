@@ -162,7 +162,7 @@ export class Dictionary {
       })
     } else if (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && isPossiblyUildeh) {
       conversions.splice(0, 0, {
-        traditional: `${_k.b}${isErUg ? _k.a : _k.e}${_k.r}'`,
+        traditional: `${_k.b}${isErUg ? _k.a : _k.e}${_k.r}`,
         cyrillic: '-аар, -ээр, -р',
         latin: '-aar, -eer, -r',
       })
