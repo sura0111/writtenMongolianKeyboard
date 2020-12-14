@@ -234,6 +234,9 @@ export default class WrittenMongolKeyboardEditable {
       } else if (previousCharacters[1] === KEY.t && keyword === 's') {
         this.caret.insertText(KEY.ch, { remove: 1 })
         return
+      } else if (previousCharacters[1] === KEY.s && keyword === 'h') {
+        this.caret.insertText(KEY.sh, { remove: 1 })
+        return
       }
     }
 

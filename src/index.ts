@@ -227,6 +227,9 @@ export default class WrittenMongolKeyboard {
         } else if (previousCharacters[1] === KEY.t && keyword === 's') {
           this.insertTextAtSelection(KEY.ch, { remove: 'character' })
           return
+        } else if (previousCharacters[1] === KEY.s && keyword === 'h') {
+          this.insertTextAtSelection(KEY.sh, { remove: 'character' })
+          return
         }
       }
     }
