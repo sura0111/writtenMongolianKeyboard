@@ -31,6 +31,10 @@ export class Dictionary {
     const precedingChar = precedingWord?.slice(-1)
     const erVowels: string[] = [_k.a, _k.o, _k.ou]
     const isErUg = text.split('').some((c) => erVowels.includes(c))
+    const isConsonant = WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar)
+    const isConsonantWithoutN = WRITTEN_MONGOL_TYPE.consonantWithoutN.includes(precedingChar)
+    const isSoftConsonant = WRITTEN_MONGOL_TYPE.consonantsSoft.includes(precedingChar)
+    const isVovel = WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar)
 
     const isPossiblyHaryalah = [
       `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.n}`,
@@ -47,6 +51,7 @@ export class Dictionary {
       `${_k.o}${_k.n}`,
       `${_k.ou}`,
       `${_k.ou}${_k.n}`,
+      `${_k.n}${_k.i}${_k.i}`,
     ].includes(text)
 
     const isPossiblyZaah = [
@@ -71,8 +76,8 @@ export class Dictionary {
       `${_k.e}${_k.e}${_k.r}`,
       `${_k.b}${_k.a}${_k.r}`,
       `${_k.b}${_k.e}${_k.r}`,
-      `${_k.connector}${_k.i}${_k.i}${_k.e}${_k.r}`,
-      `${_k.connector}${_k.i}${_k.i}${_k.a}${_k.r}`,
+      `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.e}${_k.r}`,
+      `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.a}${_k.r}`,
     ].includes(text)
 
     const isPossiblyUguhOrshih = [
@@ -118,13 +123,43 @@ export class Dictionary {
       `${_k.connectorWithNoEmptySpace}${_k.d}${_k.uo}`,
     ].includes(text)
 
-    if (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && isPossiblyHaryalah) {
+    const isPossiblyHamaatuulah = [
+      `${_k.o}${_k.o}`,
+      `${_k.uo}${_k.uo}`,
+      `${_k.a}${_k.a}`,
+      `${_k.e}${_k.e}`,
+      `${_k.o}${_k.o}`,
+      `${_k.uo}${_k.uo}${_k.n}`,
+      `${_k.a}${_k.a}${_k.n}`,
+      `${_k.e}${_k.e}${_k.n}`,
+      `${_k.b}${_k.a}${_k.n}`,
+      `${_k.b}${_k.e}${_k.n}`,
+      `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.e}${_k.n}`,
+      `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.a}${_k.n}`,
+    ].includes(text)
+
+    const isPossiblyChigleh = [
+      `${_k.o}${_k.o}`,
+      `${_k.uo}${_k.uo}`,
+      `${_k.a}${_k.a}`,
+      `${_k.e}${_k.e}`,
+      `${_k.o}${_k.o}`,
+      `${_k.uo}${_k.uo}${_k.n}`,
+      `${_k.a}${_k.a}${_k.n}`,
+      `${_k.e}${_k.e}${_k.n}`,
+      `${_k.b}${_k.a}${_k.n}`,
+      `${_k.b}${_k.e}${_k.n}`,
+      `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.e}${_k.n}`,
+      `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.a}${_k.n}`,
+    ].includes(text)
+
+    if (isVovel && isPossiblyHaryalah) {
       conversions.splice(0, 0, {
         traditional: `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.n}`,
         cyrillic: '-ийн, -ын, -н',
         latin: '-iin, -n',
       })
-    } else if (WRITTEN_MONGOL_TYPE.consonantWithoutN.includes(precedingChar) && isPossiblyHaryalah) {
+    } else if (isConsonantWithoutN && isPossiblyHaryalah) {
       conversions.splice(0, 0, {
         traditional: `${_k.connectorWithNoEmptySpace}${_k.ou}${_k.n}`,
         cyrillic: '-ийн, -ын, -н',
@@ -136,13 +171,13 @@ export class Dictionary {
         cyrillic: '-ийн, -ын, -н',
         latin: '-iin, -n',
       })
-    } else if (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && isPossiblyZaah) {
+    } else if (isVovel && isPossiblyZaah) {
       conversions.splice(0, 0, {
         traditional: `${_k.connectorWithNoEmptySpace}${_k.i}`,
         cyrillic: '-ийг, -ыг, -г',
         latin: '-iig, -g',
       })
-    } else if (WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar) && isPossiblyZaah) {
+    } else if (isConsonant && isPossiblyZaah) {
       conversions.splice(0, 0, {
         traditional: `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}`,
         cyrillic: '-ийг, -ыг, -г',
@@ -150,27 +185,25 @@ export class Dictionary {
       })
     } else if (precedingChar && isPossiblyGarah) {
       conversions.splice(0, 0, {
-        traditional: isErUg ? 'ᠠᠴᠠ' : 'ᠡᠴᠡ',
+        traditional: isErUg
+          ? `${_k.connectorWithNoEmptySpace}${_k.a}${_k.ch}${_k.a}`
+          : `${_k.connectorWithNoEmptySpace}${_k.e}${_k.ch}${_k.e}`,
         cyrillic: '-аас, -ээс, -оос -өөс, -с',
         latin: '-aas, -ees, -oos, -uus, -s',
       })
-    } else if (WRITTEN_MONGOL_TYPE.consonants.includes(precedingChar) && isPossiblyUildeh) {
+    } else if (isConsonant && isPossiblyUildeh) {
       conversions.splice(0, 0, {
         traditional: `${_k.connector}${_k.i}${_k.i}${isErUg ? _k.a : _k.e}${_k.r}`,
         cyrillic: '-аар, -оор, -р',
         latin: '-aar, oor, -r',
       })
-    } else if (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) && isPossiblyUildeh) {
+    } else if (isVovel && isPossiblyUildeh) {
       conversions.splice(0, 0, {
         traditional: `${_k.b}${isErUg ? _k.a : _k.e}${_k.r}`,
         cyrillic: '-аар, -ээр, -р',
         latin: '-aar, -eer, -r',
       })
-    } else if (
-      (WRITTEN_MONGOL_TYPE.vovels.includes(precedingChar) ||
-        WRITTEN_MONGOL_TYPE.consonantsSoft.includes(precedingChar)) &&
-      isPossiblyUguhOrshih
-    ) {
+    } else if ((isVovel || isSoftConsonant) && isPossiblyUguhOrshih) {
       conversions.splice(0, 0, {
         traditional: `${_k.connectorWithNoEmptySpace}${_k.d}${_k.o}${_k.r}`,
         cyrillic: '-д, -нд',
@@ -181,12 +214,32 @@ export class Dictionary {
         cyrillic: '-д, -нд',
         latin: '-d, -nd',
       })
-    } else if (isPossiblyUguhOrshih) {
+    } else if (precedingChar && isPossiblyUguhOrshih) {
       conversions.splice(0, 0, { traditional: `${_k.t}${_k.ou}${_k.r}`, cyrillic: '-д, -нд', latin: '-d, -nd' })
       conversions.splice(0, 0, {
         traditional: `${_k.t}${isErUg ? _k.ou : _k.u}`,
         cyrillic: '-д, -нд',
         latin: '-d, -nd',
+      })
+    } else if (isVovel && isPossiblyHamaatuulah) {
+      conversions.splice(0, 0, {
+        traditional: isErUg ? `${_k.b}${_k.a}${_k.n}` : `${_k.b}${_k.e}${_k.n}`,
+        cyrillic: '-аа(н), -ээ(н), -оо(н) -өө(н)',
+        latin: '-aa(n), -ee(n), -oo(n), -uu(n)',
+      })
+    } else if (isConsonant && isPossiblyHamaatuulah) {
+      conversions.splice(0, 0, {
+        traditional: isErUg
+          ? `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.a}${_k.n}`
+          : `${_k.connectorWithNoEmptySpace}${_k.i}${_k.i}${_k.e}${_k.n}`,
+        cyrillic: '-аа(н), -ээ(н), -оо(н) -өө(н)',
+        latin: '-aa(n), -ee(n), -oo(n), -uu(n)',
+      })
+    } else if (precedingChar && isPossiblyChigleh) {
+      conversions.splice(0, 0, {
+        traditional: `${_k.ou}${_k.r}${_k.ou}${_k.g}${_k.ou}`,
+        cyrillic: '-руу, -луу, -рүү, -лүү',
+        latin: '-ruu, -luu',
       })
     }
 

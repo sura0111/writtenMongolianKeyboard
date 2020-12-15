@@ -44,7 +44,7 @@ export default class WrittenMongolKeyboardEditable {
 
     switch (event.key) {
       case 'Backspace':
-        this.removeCharacterBeforeCaret(event)
+        this.removeCharacterBeforeCaret()
         return
       case ' ':
       case 'ArrowRight':
@@ -260,9 +260,7 @@ export default class WrittenMongolKeyboardEditable {
     return new Promise((resolve) => setTimeout(resolve))
   }
 
-  private async removeCharacterBeforeCaret(event: KeyboardEvent) {
-    event.preventDefault()
-    this.caret.insertText('', { remove: 1 })
+  private async removeCharacterBeforeCaret() {
     await this.nextTick()
     const previousCharacters = this.caret.getCaretCharacter('backward', 2)
     if (previousCharacters === KEY.connector) {
