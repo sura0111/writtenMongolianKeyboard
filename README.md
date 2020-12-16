@@ -1,5 +1,5 @@
 # Written Mongol Keyboard  
-"written-mongol-keyboard" is a library that converts `alphabet character input` and `cyrillic character input` in textarea (input) tags to traditional Mongolian scripts.  
+"written-mongol-keyboard" is a library that converts `alphabet character input` and `cyrillic character input` in textarea (input) tags to traditional Mongolian script.  
 
 ![image](https://raw.githubusercontent.com/sura0111/writtenMongolianKeyboard/main/image.png)
 
